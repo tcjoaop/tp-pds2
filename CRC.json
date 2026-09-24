@@ -1,0 +1,157 @@
+[
+  {
+    "name": "Usuario",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Nome",
+      "Login e Senha",
+      "Status",
+      "Autentifica os dados do usuário"
+    ],
+    "collaborators": [
+      "Perfil",
+      "Pedido"
+    ]
+  },
+  {
+    "name": "Perfil",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Nome",
+      "Descrição",
+      "Agrupar permissões e responsabilidade de acesso"
+    ],
+    "collaborators": [
+      "Usuario"
+    ]
+  },
+  {
+    "name": "Cliente",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "Armazenar dados opcionais do consumidor",
+      "ID",
+      "Telefone",
+      "Email",
+      "CPF",
+      "Nome",
+      "Apresentar o histórico do cliente"
+    ],
+    "collaborators": [
+      "Pedido"
+    ]
+  },
+  {
+    "name": "Mesa",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Número",
+      "Capacidade",
+      "Status",
+      "Ocupar mesa",
+      "Liberar mesa"
+    ],
+    "collaborators": [
+      "Pedido"
+    ]
+  },
+  {
+    "name": "Categoria",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Nome",
+      "Descrição",
+      ""
+    ],
+    "collaborators": [
+      "Produto"
+    ]
+  },
+  {
+    "name": "Produto",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Nome",
+      "Preço",
+      "Disponibilidade",
+      "Tempo de preparo"
+    ],
+    "collaborators": [
+      "Categoria",
+      "ItemPedido"
+    ]
+  },
+  {
+    "name": "Pedido",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Hora de Abertura do pedido",
+      "Status",
+      "Preço total",
+      "Adicionar Item",
+      "Alterar status",
+      "Calcular total"
+    ],
+    "collaborators": [
+      "Cliente",
+      "Mesa",
+      "Usuario",
+      "Pagamento",
+      "ItemPedido"
+    ]
+  },
+  {
+    "name": "ItemPedido",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Quantidade",
+      "Preço por unidade",
+      "Subtotal",
+      "Observação sobre o pedido",
+      "Calcular Subtotal"
+    ],
+    "collaborators": [
+      "Produto",
+      "Pedido"
+    ]
+  },
+  {
+    "name": "Pagamento",
+    "superclasses": "",
+    "subclasses": "",
+    "type": 1,
+    "responsibilities": [
+      "ID",
+      "Forma de pagamento",
+      "Valor",
+      "Hora de pagamento",
+      "Registrar a conclusão e fatores do pagamento"
+    ],
+    "collaborators": [
+      "Pedido"
+    ]
+  }
+]
