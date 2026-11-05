@@ -17,10 +17,6 @@ class Cliente {
         
         void setNome(const std::string& nome);
         void setTelefone(const std::string& telefone);
-
-        int getId() const;
-        std::string getNome() const;
-        std::string getTelefone() const;
-}
+};
 
 #endif
