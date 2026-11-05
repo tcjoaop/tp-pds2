@@ -5,3 +5,13 @@ Botei tudo em Docker p gnt não ter dor de cabeça com makefile, para rodar é s
 docker compose run --rm --build app bash
 
 Daí vc digita make e make run
+
+Pelo amor de Deus segue esse formato:
+
+nome_de_arquivo.tipo
+
+nomeFuncao()
+
+ClasseExemplo {
+    atributo_exemplo
+}
