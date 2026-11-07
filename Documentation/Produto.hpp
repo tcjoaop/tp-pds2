@@ -21,11 +21,11 @@ public:
     bool getDisponivel() const;
     int getTempoPreparo() const;
    
-    int setId(const int id);
-    std::string setNome(const std::string& nome);
-    int setPreco(const int preco);
-    bool setDisponivel(const bool disponivel);
-    int setTempoPreparo(const int tempoPreparo);
+    void setId(const int id);
+    void setNome(const std::string& nome);
+    void setPreco(const int preco);
+    void setDisponivel(const bool disponivel);
+    void setTempoPreparo(const int tempoPreparo);
 };
 
 #endif

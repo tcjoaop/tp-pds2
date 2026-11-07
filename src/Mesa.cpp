@@ -35,9 +35,17 @@ void Mesa::setStatus(const int status){
 }
 
 void Mesa::ocupar(Mesa& Mesa){
-
+if(Mesa.getStatus() == 0){
+        Mesa.setStatus(1);
+    } else {
+    std::cout << "Mesa já está ocupada." << std::endl;
+    }
 }
 
 void Mesa::liberar(Mesa& Mesa){
-    
+    if(Mesa.getStatus() == 1){
+        Mesa.setStatus(0);
+    } else {
+    std::cout << "Mesa já está livre." << std::endl;
+    }
 }
