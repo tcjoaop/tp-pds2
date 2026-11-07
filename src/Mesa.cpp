@@ -1,14 +1,22 @@
 #include "../documentation/Mesa.hpp"
 
-Mesa::Mesa(const int id,const int numero,const int capacidade,const int status);
-    
-int Mesa::getId() const{}
+Mesa::Mesa(const int id,const int numero,const int capacidade,const int status) : id(id), numero(numero), capacidade(capacidade), status(status) {}
 
-int Mesa::getNumero() const{}
+int Mesa::getId() const{
+    return id;
+}
 
-int Mesa::getCapacidade() const{}
+int Mesa::getNumero() const{
+    return numero;
+}
 
-int Mesa::getStatus() const{}
+int Mesa::getCapacidade() const{
+    return capacidade;
+}
+
+int Mesa::getStatus() const{
+    return status;
+}
    
 void Mesa::setId(const int id){
     this->id = id;
@@ -26,6 +34,10 @@ void Mesa::setStatus(const int status){
     this->status = status;
 }
 
-void Mesa::ocupar(Mesa& Mesa){}
+void Mesa::ocupar(Mesa& Mesa){
 
-void Mesa::liberar(Mesa& Mesa){}
+}
+
+void Mesa::liberar(Mesa& Mesa){
+    
+}

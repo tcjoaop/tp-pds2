@@ -16,9 +16,9 @@ public:
     int getNome() const;
     int getDescricao() const;
    
-    int setId(const int id);
-    std::string setNome(const std::string& nome);
-    std::string setDescricao(const std::string& descricao);  
+    void setId(const int id);
+    void setNome(const std::string& nome);
+    void setDescricao(const std::string& descricao);  
 };
 
 #endif
