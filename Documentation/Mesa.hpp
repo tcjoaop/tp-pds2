@@ -18,10 +18,10 @@ public:
     int getCapacidade() const;
     int getStatus() const;
    
-    int setId(const int id);
-    int setNumero(const int numero);
-    int setCapacidade(const int capacidade);
-    int setStatus(const int status);
+    void setId(const int id);
+    void setNumero(const int numero);
+    void setCapacidade(const int capacidade);
+    void setStatus(const int status);
 
     void ocupar(Mesa& Mesa);
     void liberar(Mesa& Mesa);
