@@ -22,7 +22,7 @@ private:
     Usuario* atendente;
     Cliente* cliente;
 
-    std:vector<ItemPedido> itens;
+    std::vector<ItemPedido> itens;
     std::vector<Pagamento> pagamentos;
 
     double taxaServicoPercentual;

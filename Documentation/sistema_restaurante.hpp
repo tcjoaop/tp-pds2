@@ -23,5 +23,6 @@ class SistemaRestaurante {
         explicit SistemaRestaurante(const std::string& caminhoBancoDados);
         bool inicializar();
         void executar();
-    
+};
+
 #endif

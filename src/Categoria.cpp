@@ -6,11 +6,11 @@ int Categoria::getId() const{
     return id;
 }
 
-int Categoria::getNome() const{
+std::string Categoria::getNome() const{
     return nome;
 }
 
-int Categoria::getDescricao() const{
+std::string Categoria::getDescricao() const{
     return descricao;
 }
 

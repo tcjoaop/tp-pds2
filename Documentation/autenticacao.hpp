@@ -23,11 +23,11 @@ public:
 
     bool possuiPermissao(const std::string& permissao) const;
 
-private
+private:
         std::string hashSenha(const std::string& senha) const;
         bool validarSenha(const std::string& senha, 
                         const std::string& hash) const;
 
-
+};
 
 #endif
