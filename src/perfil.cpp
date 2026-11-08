@@ -14,6 +14,27 @@ std::vector<std::string> Perfil::getPermissoes() const {
     return permissoes;
 }
 
-void Perfil::adicionarPermissao(const std::string& permissao){}
-void Perfil::removerPermissao(const std::string& permissao){}
-bool Perfil::possuiPermissao(const std::string& permissao) const{}
+void Perfil::adicionarPermissao(const std::string& permissao){
+    for(int i = 0; i < permissoes.size(); i++){
+        if(permissoes[i] == permissao){
+            return;
+        }
+    }
+    permissoes.push_back(permissao);
+}
+void Perfil::removerPermissao(const std::string& permissao){
+    for(int i = 0; i < permissoes.size(); i++){
+        if(permissoes[i] == permissao){
+            permissoes.erase(permissoes.begin() + i);
+            return;
+        }
+    }
+}
+bool Perfil::possuiPermissao(const std::string& permissao) const{
+    for(int i = 0; i < permissoes.size(); i++){
+        if(permissoes[i] == permissao){
+            return true;
+        }
+    }
+    return false;
+}
