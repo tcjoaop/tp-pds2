@@ -1,0 +1,11 @@
+{
+  "usuarios": {
+    "admin": {
+      "nome": "Admin",
+      "senha": "123"
+    }
+  },
+  "produtos": [],
+  "mesas": [],
+  "pedidos": []
+}

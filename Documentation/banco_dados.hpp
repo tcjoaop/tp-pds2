@@ -2,6 +2,7 @@
 #define BANCO_DADOS_HPP
 #include <string>
 #include <vector>
+#include <fstream>
 #include "usuario.hpp"
 #include "produto.hpp"
 #include "mesa.hpp"
@@ -11,7 +12,6 @@
 class BancoDados {
 private:
     std::string caminhoArquivo;
-    void* conexao; // Ponteiro para a conexão com o banco de dados
 
 public:
     explicit BancoDados(const std::string& caminhoArquivo);
