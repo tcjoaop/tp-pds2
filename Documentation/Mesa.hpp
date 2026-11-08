@@ -1,9 +1,9 @@
 #ifndef MESA_HPP
 #define MESA_HPP
 #include <string>
-#include "Pedido.hpp"
+#include "pedido.hpp"
 
-class Usuario {
+class Mesa {
 private:
     int id;
     int numero;

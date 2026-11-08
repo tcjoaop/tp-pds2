@@ -2,9 +2,8 @@
 #define PRODUTO_HPP
 #include <string>
 #include "Categoria.hpp"
-#include "ItemPedido"
 
-class Usuario {
+class Produto {
 private:
     int id;
     std::string nome;

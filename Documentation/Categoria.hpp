@@ -1,20 +1,20 @@
 #ifndef CATEGORIA_HPP
 #define CATEGORIA_HPP
 #include <string>
-#include "Produto.hpp"
+#include "produto.hpp"
 
-class Usuario {
+class Categoria {
 private:
     int id;
     std::string nome;
     std::string descricao;
 
 public:
-    Categoria(const int id,const std::string& numero,const std::string& descricao);
+    Categoria(const int id,const std::string& nome,const std::string& descricao);
     
     int getId() const;
-    int getNome() const;
-    int getDescricao() const;
+    std::string getNome() const;
+    std::string getDescricao() const;
    
     void setId(const int id);
     void setNome(const std::string& nome);
