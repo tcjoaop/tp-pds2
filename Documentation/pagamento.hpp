@@ -26,3 +26,6 @@ public:
 
     double calcularTroco(double valorPago) const;
 };
+
+
+#endif
