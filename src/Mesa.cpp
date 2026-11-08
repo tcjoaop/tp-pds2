@@ -1,4 +1,5 @@
 #include "../documentation/Mesa.hpp"
+#include <iostream>
 
 Mesa::Mesa(const int id,const int numero,const int capacidade,const int status) : id(id), numero(numero), capacidade(capacidade), status(status) {}
 
