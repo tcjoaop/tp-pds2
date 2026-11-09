@@ -41,5 +41,9 @@ double item_pedido::calcularSubtotal() const{
     return quantidade * precoUnitario;
 }
 bool item_pedido::podeSerCancelado() const{
-    return (status == StatusItemPedido::PENDENTE)||(status == StatusItemPedido::ENVIADO_COZINHA);
+    if ((status == StatusItemPedido::PENDENTE)||(status == StatusItemPedido::ENVIADO_COZINHA)){
+        return true;
+    } else {
+        return false;
+    }
 }
