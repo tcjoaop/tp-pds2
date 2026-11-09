@@ -1,46 +1,52 @@
 #include "../documentation/item_pedido.hpp"
 
-item_pedido::ItemPedido(int id, 
+ItemPedido::ItemPedido(int id, 
         const Produto& produto, 
         int quantidade, 
         double precoUnitario, 
         const std::string& observacoes) : id(id), produto(new Produto(produto)), quantidade(quantidade), precoUnitario(precoUnitario), observacoes(observacoes), status(StatusItemPedido::PENDENTE) {}
 
-item_pedido::~ItemPedido(){}
+ItemPedido::~ItemPedido(){
+    delete produto;
+}
 
-int item_pedido::getId() const{
+int ItemPedido::getId() const{
     return id;
 }
-const Produto& item_pedido::getProduto() const{
-    return produto;
+const Produto& ItemPedido::getProduto() const{
+    return *produto;
 }
-int item_pedido::getQuantidade() const{
+int ItemPedido::getQuantidade() const{
     return quantidade;
 }
-double item_pedido::getPrecoUnitario() const{
+double ItemPedido::getPrecoUnitario() const{
     return precoUnitario;
 }
-std::string item_pedido::getObservacoes() const{
+std::string ItemPedido::getObservacoes() const{
     return observacoes;
 }
-StatusItemPedido item_pedido::getStatus() const{
+StatusItemPedido ItemPedido::getStatus() const{
     return status;
 }
 
-void item_pedido::setQuantidade(int quantidade){
-    this->quantidade = quantidade;
+void ItemPedido::setQuantidade(int quantidade){
+    if(quantidade > 0){
+        this->quantidade = quantidade;
+    } else {
+        std::cout << "Quantidade inválida. A quantidade deve ser maior que zero." << std::endl;
+    }
 }
-void item_pedido::setObservacoes(const std::string& observacoes){
+void ItemPedido::setObservacoes(const std::string& observacoes){
     this->observacoes = observacoes;
 }
-void item_pedido::setStatus(StatusItemPedido status){
+void ItemPedido::setStatus(StatusItemPedido status){
     this->status = status;
 }
 
-double item_pedido::calcularSubtotal() const{
+double ItemPedido::calcularSubtotal() const{
     return quantidade * precoUnitario;
 }
-bool item_pedido::podeSerCancelado() const{
+bool ItemPedido::podeSerCancelado() const{
     if ((status == StatusItemPedido::PENDENTE)||(status == StatusItemPedido::ENVIADO_COZINHA)){
         return true;
     } else {
