@@ -1,4 +1,5 @@
 #include "../documentation/pedido.hpp"
+#include <iostream>
 
 Pedido::Pedido(int id,
           const std::string& dataHoraAbertura,
@@ -58,26 +59,82 @@ ItemPedido* Pedido::buscarItem(int itemId) {
     return nullptr;
 }
 
-double calcularTotalSemTaxa() const;
+double Pedido::calcularTotalSemTaxa() const{
+    double total = 0.0;
+    for (int i = 0; i < itens.size(); ++i) {
+        if (itens[i].getStatus() != StatusItemPedido::CANCELADO) {
+        total += itens[i].calcularSubtotal();
+        }
+    }
+    return total;
+}
 
-double calcularTaxaServico() const;
+double Pedido::calcularTaxaServico() const{
+    return calcularTotalSemTaxa() * (taxaServicoPercentual / 100.0);
+}
 
-double calcularTotalComTaxa() const;
+double Pedido::calcularTotalComTaxa() const{
+    return calcularTotalSemTaxa() + calcularTaxaServico() - desconto;
+}
 
-double calcularTotalPago() const;
+double Pedido::calcularTotalPago() const{
+    double total = 0.0;
+    for (int i = 0; i < pagamentos.size(); ++i) {
+        total += pagamentos[i].getValor();
+    }
+    return total;
+}
 
-double calcularSaldoRestante() const;
+double Pedido::calcularSaldoRestante() const{
+    return calcularTotalComTaxa() - calcularTotalPago();
+}
 
-void setTaxaServicoPercentual(double taxa);
+void Pedido::setTaxaServicoPercentual(double taxa){
+    this->taxaServicoPercentual = taxa;
+}
 
-void setDesconto(double desconto);
+void Pedido::setDesconto(double desconto){
+    this->desconto = desconto;
+}
 
-void adicionarPagamento(const Pagamento& pagamento);
+void Pedido::adicionarPagamento(const Pagamento& pagamento){
+    pagamentos.push_back(pagamento);
+    if(calcularSaldoRestante() <= 0.0) {
+        alterarStatus(StatusPedido::FINALIZANDO);
+    }
+}
 
-void alterarStatus(StatusPedido novoStatus);
+void Pedido::alterarStatus(StatusPedido novoStatus){
+    status = novoStatus;
+}
 
-void fecharPedido(const std::string& dataHoraFechamento);
+void Pedido::fecharPedido(const std::string& dataHoraFechamento){
+    if(podeSerFechado()){
+        this->dataHoraFechamento = dataHoraFechamento;
+        alterarStatus(StatusPedido::ENTREGUE);
+        if(mesa != nullptr) {
+            mesa->alterarStatus(StatusMesa::LIVRE);
+        }
+    } else {
+        std::cout << "O pedido não pode ser fechado. Status atual: " << static_cast<int>(status) << std::endl;
+    }
+}
 
-void cancelar();
+void Pedido::cancelar(){
+    alterarStatus(StatusPedido::CANCELADO);
+    if(mesa != nullptr) {
+        mesa->alterarStatus(StatusMesa::LIVRE);
+    }
+}
 
-bool podeSerFechado() const;
+bool Pedido::podeSerFechado() const{
+    if(status == StatusPedido::CANCELADO||calcularSaldoRestante() > 0.0) {
+        return false;
+    }
+    for(int i = 0; i < itens.size(); ++i) {
+        if (itens[i].getStatus() != StatusItemPedido::ENTREGUE && itens[i].getStatus() != StatusItemPedido::CANCELADO) {
+            return false;
+        }
+    }
+    return true;
+}
