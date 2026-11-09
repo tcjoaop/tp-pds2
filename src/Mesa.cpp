@@ -1,5 +1,6 @@
 #include "../documentation/Mesa.hpp"
 #include <iostream>
+#include "../documentation/tipos.hpp"
 
 Mesa::Mesa(const int id,const int numero,const int capacidade,const int status) : id(id), numero(numero), capacidade(capacidade), status(status) {}
 
@@ -36,17 +37,9 @@ void Mesa::setStatus(const int status){
 }
 
 void Mesa::ocupar(Mesa& Mesa){
-if(Mesa.getStatus() == 0){
-        Mesa.setStatus(1);
-    } else {
-    std::cout << "Mesa já está ocupada." << std::endl;
-    }
+    Mesa = StatusMesa::OCUPADA;
 }
 
 void Mesa::liberar(Mesa& Mesa){
-    if(Mesa.getStatus() == 1){
-        Mesa.setStatus(0);
-    } else {
-    std::cout << "Mesa já está livre." << std::endl;
-    }
+    Mesa = StatusMesa::LIVRE;
 }
