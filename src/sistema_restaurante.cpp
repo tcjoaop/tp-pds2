@@ -797,6 +797,236 @@ void SistemaRestaurante::moduloRelatorios() {
 }
 
 void SistemaRestaurante::moduloCadastros() {
-    std::cout << "=== MODULO CADASTROS ===" << std::endl;
-    // Implementar funcionalidades do módulo de cadastros
+    if (!autenticacao.possuiPermissao(PerfilAcesso::ADMINISTRADOR)) {
+        std::cout << "\nAcesso negado. Modulo exclusivo para administradores.\n" << std::endl;
+        return;
+    }
+
+    int opcao = -1;
+    while (opcao != 0) {
+        std::cout << "\n========================================" << std::endl;
+        std::cout << "           MODULO DE CADASTROS          " << std::endl;
+        std::cout << "========================================" << std::endl;
+        std::cout << "1. Cadastrar novo produto no cardapio" << std::endl;
+        std::cout << "2. Listar produtos cadastrados" << std::endl;
+        std::cout << "3. Alterar disponibilidade de um produto" << std::endl;
+        std::cout << "4. Cadastrar nova mesa" << std::endl;
+        std::cout << "5. Cadastrar novo usuario do sistema" << std::endl;
+        std::cout << "0. Voltar ao menu principal" << std::endl;
+        std::cout << "Escolha uma opcao: ";
+
+        if (!(std::cin >> opcao)) {
+            std::cin.clear();
+            std::string d;
+            std::cin >> d;
+            std::cout << "Entrada invalida. Digite um numero." << std::endl;
+            continue;
+        }
+
+        switch (opcao) {
+            case 1: {
+                std::cout << "\n--- CADASTRAR PRODUTO ---" << std::endl;
+                int id, preco, tempoPreparo;
+                std::string nome;
+
+                std::cout << "Digite o ID do produto: ";
+                if (!(std::cin >> id)) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] ID invalido." << std::endl;
+                    break;
+                }
+
+                Produto* existente = bancoDados.buscarProdutoPorId(id);
+                if (existente != nullptr) {
+                    std::cout << "[ERRO] Ja existe um produto com o ID " << id << "." << std::endl;
+                    delete existente;
+                    break;
+                }
+
+                std::cin.ignore();
+                std::cout << "Digite o nome do produto: ";
+                std::getline(std::cin, nome);
+
+                std::cout << "Digite o preco (inteiro em R$): ";
+                if (!(std::cin >> preco) || preco < 0) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] Preco invalido." << std::endl;
+                    break;
+                }
+
+                std::cout << "Digite o tempo estimado de preparo (em minutos): ";
+                if (!(std::cin >> tempoPreparo) || tempoPreparo < 0) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] Tempo de preparo invalido." << std::endl;
+                    break;
+                }
+
+                Produto novoProduto(id, nome, preco, true, tempoPreparo);
+                if (bancoDados.salvarProduto(novoProduto)) {
+                    std::cout << "[SUCESSO] Produto '" << nome << "' cadastrado com sucesso!" << std::endl;
+                } else {
+                    std::cout << "[ERRO] Falha ao salvar produto no banco de dados." << std::endl;
+                }
+                break;
+            }
+            case 2: {
+                std::vector<Produto> produtos = bancoDados.listarProdutos();
+                std::cout << "\n--- PRODUTOS CADASTRADOS ---" << std::endl;
+                if (produtos.empty()) {
+                    std::cout << "Nenhum produto cadastrado." << std::endl;
+                } else {
+                    for (const auto& prod : produtos) {
+                        std::cout << "ID: " << prod.getId()
+                                  << " | Nome: " << prod.getNome()
+                                  << " | Preco: R$ " << prod.getPreco()
+                                  << " | Tempo: " << prod.getTempoPreparo() << "min"
+                                  << " | Status: " << (prod.getDisponivel() ? "[DISPONIVEL]" : "[INDISPONIVEL]")
+                                  << std::endl;
+                    }
+                }
+                break;
+            }
+            case 3: {
+                int id;
+                std::cout << "Digite o ID do produto para alternar disponibilidade: ";
+                std::cin >> id;
+
+                Produto* prod = bancoDados.buscarProdutoPorId(id);
+                if (prod == nullptr) {
+                    std::cout << "[ERRO] Produto ID " << id << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                prod->setDisponivel(!prod->getDisponivel());
+                if (bancoDados.salvarProduto(*prod)) {
+                    std::cout << "[SUCESSO] Produto '" << prod->getNome() << "' agora esta "
+                              << (prod->getDisponivel() ? "DISPONIVEL" : "INDISPONIVEL") << "!" << std::endl;
+                } else {
+                    std::cout << "[ERRO] Falha ao atualizar produto." << std::endl;
+                }
+                delete prod;
+                break;
+            }
+            case 4: {
+                std::cout << "\n--- CADASTRAR NOVA MESA ---" << std::endl;
+                int idMesa, numeroMesa, capacidadeMesa;
+
+                std::cout << "Digite o ID da nova mesa: ";
+                if (!(std::cin >> idMesa)) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] ID invalido." << std::endl;
+                    break;
+                }
+
+                Mesa* existente = bancoDados.buscarMesaPorId(idMesa);
+                if (existente != nullptr) {
+                    std::cout << "[ERRO] Ja existe uma mesa com o ID " << idMesa << "." << std::endl;
+                    delete existente;
+                    break;
+                }
+
+                std::cout << "Digite o numero da mesa: ";
+                if (!(std::cin >> numeroMesa)) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] Numero invalido." << std::endl;
+                    break;
+                }
+
+                std::cout << "Digite a capacidade da mesa (lugares): ";
+                if (!(std::cin >> capacidadeMesa) || capacidadeMesa <= 0) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] Capacidade invalida." << std::endl;
+                    break;
+                }
+
+                Mesa novaMesa(idMesa, numeroMesa, capacidadeMesa, StatusMesa::LIVRE);
+                if (bancoDados.salvarMesa(novaMesa)) {
+                    std::cout << "[SUCESSO] Mesa " << numeroMesa << " cadastrada com sucesso!" << std::endl;
+                } else {
+                    std::cout << "[ERRO] Falha ao salvar mesa." << std::endl;
+                }
+                break;
+            }
+            case 5: {
+                std::cout << "\n--- CADASTRAR NOVO USUARIO ---" << std::endl;
+                int id, opcaoPerfil;
+                std::string nome, login, senha;
+
+                std::cout << "Digite o ID do usuario: ";
+                if (!(std::cin >> id)) {
+                    std::cin.clear();
+                    std::string d;
+                    std::cin >> d;
+                    std::cout << "[ERRO] ID invalido." << std::endl;
+                    break;
+                }
+
+                std::cin.ignore();
+                std::cout << "Digite o nome completo: ";
+                std::getline(std::cin, nome);
+
+                std::cout << "Digite o login: ";
+                std::cin >> login;
+
+                Usuario* existente = bancoDados.buscarUsuarioPorLogin(login);
+                if (existente != nullptr) {
+                    std::cout << "[ERRO] Ja existe um usuario cadastrado com o login '" << login << "'." << std::endl;
+                    delete existente;
+                    break;
+                }
+
+                std::cout << "Digite a senha: ";
+                std::cin >> senha;
+
+                std::cout << "Escolha o Perfil de Acesso:\n"
+                          << "0. ADMINISTRADOR\n"
+                          << "1. CAIXA\n"
+                          << "2. GARCOM\n"
+                          << "3. COZINHEIRO\n"
+                          << "Perfil: ";
+                std::cin >> opcaoPerfil;
+
+                PerfilAcesso perfil;
+                switch (opcaoPerfil) {
+                    case 0: perfil = PerfilAcesso::ADMINISTRADOR; break;
+                    case 1: perfil = PerfilAcesso::CAIXA; break;
+                    case 2: perfil = PerfilAcesso::GARCOM; break;
+                    case 3: perfil = PerfilAcesso::COZINHEIRO; break;
+                    default:
+                        std::cout << "[AVISO] Opcao invalida. Definindo como GARCOM por padrao." << std::endl;
+                        perfil = PerfilAcesso::GARCOM;
+                        break;
+                }
+
+                std::hash<std::string> hasher;
+                std::string senhaHash = std::to_string(hasher(senha));
+
+                Usuario novoUsuario(id, nome, login, senhaHash, perfil);
+                if (bancoDados.salvarUsuario(novoUsuario)) {
+                    std::cout << "[SUCESSO] Usuario '" << login << "' cadastrado com sucesso!" << std::endl;
+                } else {
+                    std::cout << "[ERRO] Falha ao salvar usuario no banco de dados." << std::endl;
+                }
+                break;
+            }
+            case 0:
+                std::cout << "Retornando ao menu principal..." << std::endl;
+                break;
+            default:
+                std::cout << "Opcao invalida. Tente novamente." << std::endl;
+                break;
+        }
+    }
 }
