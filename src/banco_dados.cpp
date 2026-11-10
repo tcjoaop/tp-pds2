@@ -159,7 +159,8 @@ bool BancoDados::salvarMesa(const Mesa& mesa) {
     json mesaJson = {
         {"id", mesa.getId()},
         {"numero", mesa.getNumero()},
-        {"capacidade", mesa.getCapacidade()}
+        {"capacidade", mesa.getCapacidade()},
+        {"status", static_cast<int>(mesa.getStatus())}
     };
 
     bool encontrado = false;

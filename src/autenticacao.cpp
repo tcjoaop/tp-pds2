@@ -42,7 +42,6 @@ bool Autenticacao::possuiPermissao(PerfilAcesso perfilNecessario) const {
         return true;
     }
 
-    // Se nao for admin, precisa ser exatamente o perfil requerido
     return perfilAtual == perfilNecessario;
 }
 

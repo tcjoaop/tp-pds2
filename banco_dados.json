@@ -1,41 +1,21 @@
 {
-    "mesas": [],
-    "pedidos": [],
-    "perfis": {
-        "ADMINISTRADOR": {
-            "permissoes": [
-                "admin"
-            ]
-        },
-        "CAIXA": {
-            "permissoes": [
-                "gerenciar_pagamentos"
-            ]
-        },
-        "COZINHEIRO": {
-            "permissoes": [
-                "visualizar_pedidos"
-            ]
-        },
-        "GARCOM": {
-            "permissoes": [
-                "gerenciar_pedidos",
-                "visualizar_mesas"
-            ]
+    "mesas": [
+        {
+            "capacidade": 4,
+            "id": 1,
+            "numero": 1,
+            "status": 0
         }
-    },
+    ],
+    "pedidos": [],
     "produtos": [],
-    "usuarios": {
-        "admin": {
+    "usuarios": [
+        {
             "id": 1,
             "login": "admin",
-            "nome": "Joao Administrador",
-            "permissoes": [
-                "ADMIN",
-                "GERENTE",
-                "CAIXA"
-            ],
+            "nome": "Administrador",
+            "perfil": 0,
             "senha": "3288171798096025883"
         }
-    }
+    ]
 }
