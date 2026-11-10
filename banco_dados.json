@@ -4,10 +4,18 @@
             "capacidade": 4,
             "id": 1,
             "numero": 1,
+            "status": 1
+        }
+    ],
+    "pedidos": [
+        {
+            "dataHoraAbertura": "2026-11-10 12:00:00",
+            "id": 1,
+            "itens": [],
+            "mesaId": 1,
             "status": 0
         }
     ],
-    "pedidos": [],
     "produtos": [],
     "usuarios": [
         {

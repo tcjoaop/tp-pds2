@@ -198,18 +198,27 @@ bool BancoDados::salvarPedido(const Pedido& pedido) {
     arquivo >> dados;
     arquivo.close();
 
+    int mesaId = (pedido.getMesa() != nullptr) ? pedido.getMesa()->getId() : -1;
+
     json pedidoJson = {
         {"id", pedido.getId()},
-        {"mesaId", pedido.getMesa()->getId()},
-        {"produtos", json::array()}
+        {"dataHoraAbertura", "2026-11-10 12:00:00"},
+        {"mesaId", mesaId},
+        {"status", static_cast<int>(pedido.getStatus())},
+        {"itens", json::array()}
     };
 
     for (const auto& item : pedido.getItens()) {
-        json produtoJson = {
+        json itemJson = {
             {"id", item.getId()},
-            {"quantidade", item.getQuantidade()}
+            {"produtoId", item.getProduto().getId()},
+            {"produtoNome", item.getProduto().getNome()},
+            {"quantidade", item.getQuantidade()},
+            {"precoUnitario", item.getPrecoUnitario()},
+            {"observacoes", item.getObservacoes()},
+            {"status", static_cast<int>(item.getStatus())}
         };
-        pedidoJson["produtos"].push_back(produtoJson);
+        pedidoJson["itens"].push_back(itemJson);
     }
 
     bool encontrado = false;
@@ -223,7 +232,6 @@ bool BancoDados::salvarPedido(const Pedido& pedido) {
     }
 
     if(!encontrado) {
-        // Adicionar novo pedido
         dados["pedidos"].push_back(pedidoJson);
     }
 
@@ -294,8 +302,33 @@ std::vector<Pedido> BancoDados::listarPedidos() {
     arquivo.close();
 
     for (const auto& u : dados["pedidos"]) {
-        Pedido pedido(u["id"].get<int>(),
-                      u["dataHoraAbertura"].get<std::string>());
+        std::string dataHora = u.contains("dataHoraAbertura") ? u["dataHoraAbertura"].get<std::string>() : "N/A";
+        int mId = u.contains("mesaId") ? u["mesaId"].get<int>() : -1;
+        Mesa* mesaPtr = (mId != -1) ? buscarMesaPorId(mId) : nullptr;
+
+        Pedido pedido(u["id"].get<int>(), dataHora, nullptr, mesaPtr);
+        if (u.contains("status")) {
+            pedido.alterarStatus(static_cast<StatusPedido>(u["status"].get<int>()));
+        }
+
+        if (u.contains("itens")) {
+            for (const auto& ij : u["itens"]) {
+                Produto prod(ij["produtoId"].get<int>(),
+                             ij.contains("produtoNome") ? ij["produtoNome"].get<std::string>() : "Produto",
+                             static_cast<int>(ij["precoUnitario"].get<double>()),
+                             true,
+                             15);
+                ItemPedido item(ij["id"].get<int>(),
+                                prod,
+                                ij["quantidade"].get<int>(),
+                                ij["precoUnitario"].get<double>(),
+                                ij.contains("observacoes") ? ij["observacoes"].get<std::string>() : "");
+                if (ij.contains("status")) {
+                    item.setStatus(static_cast<StatusItemPedido>(ij["status"].get<int>()));
+                }
+                pedido.adicionarItem(item);
+            }
+        }
         pedidos.push_back(pedido);
     }
 
@@ -385,8 +418,33 @@ Pedido* BancoDados::buscarPedidoPorId(int id) {
 
     for (const auto& u : dados["pedidos"]) {
         if (u["id"] == id) {
-            Pedido* pedido = new Pedido(u["id"].get<int>(),
-                                         u["dataHoraAbertura"].get<std::string>());
+            std::string dataHora = u.contains("dataHoraAbertura") ? u["dataHoraAbertura"].get<std::string>() : "N/A";
+            int mId = u.contains("mesaId") ? u["mesaId"].get<int>() : -1;
+            Mesa* mesaPtr = (mId != -1) ? buscarMesaPorId(mId) : nullptr;
+
+            Pedido* pedido = new Pedido(u["id"].get<int>(), dataHora, nullptr, mesaPtr);
+            if (u.contains("status")) {
+                pedido->alterarStatus(static_cast<StatusPedido>(u["status"].get<int>()));
+            }
+
+            if (u.contains("itens")) {
+                for (const auto& ij : u["itens"]) {
+                    Produto prod(ij["produtoId"].get<int>(),
+                                 ij.contains("produtoNome") ? ij["produtoNome"].get<std::string>() : "Produto",
+                                 static_cast<int>(ij["precoUnitario"].get<double>()),
+                                 true,
+                                 15);
+                    ItemPedido item(ij["id"].get<int>(),
+                                    prod,
+                                    ij["quantidade"].get<int>(),
+                                    ij["precoUnitario"].get<double>(),
+                                    ij.contains("observacoes") ? ij["observacoes"].get<std::string>() : "");
+                    if (ij.contains("status")) {
+                        item.setStatus(static_cast<StatusItemPedido>(ij["status"].get<int>()));
+                    }
+                    pedido->adicionarItem(item);
+                }
+            }
             return pedido;
         }
     }
