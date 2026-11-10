@@ -1,0 +1,75 @@
+- Autentificar Usuário
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |    Usuário cadastrado e ativo.           
+Fluxo Principal  |   1. O usuário informa login e senha.
+                 |   2. O sistema valida as credenciais.
+                 |   3. O sistema identifica o perfil e as permissões.
+                 |   4. O sistema cria a sessão e apresenta o painel correspondente.
+Fluxo Alternativo|  Credenciais inválidas: o sistema nega o acesso e informa a falha sem revelar dados sensíveis. 
+Pós-condição     |   Usuário autenticado e identificado nas operações seguintes.
+-------------------------------------------------
+
+- Abrir Pedido
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Garçom / Atendente
+Pré-condição     |    Usuário autenticado; mesa/modalidade disponível.           
+Fluxo Principal  |   1. O atendente seleciona a mesa ou modalidade de atendimento.
+                 |   2. O sistema verifica disponibilidade.
+                 |   3. O atendente confirma a abertura.
+                 |   4. O sistema gera o número do pedido, registra data/hora e responsável.
+                 |   5. Quando aplicável, a mesa é marcada como ocupada.  
+Fluxo Alternativo|   Mesa indisponível: o sistema impede a abertura e exibe o motivo.
+Pós-condição     |   Pedido criado no estado ABERTO.
+-------------------------------------------------
+
+- Adicionar item ao Pedido
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |               
+Fluxo Principal  |   
+Fluxo Alternativo|   
+Pós-condição     |   
+-------------------------------------------------
+
+- Enviar itens a cozinha
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |               
+Fluxo Principal  |   
+Fluxo Alternativo|   
+Pós-condição     |   
+------------------------------------------------
+
+- Atualizar preparo
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |               
+Fluxo Principal  |   
+Fluxo Alternativo|   
+Pós-condição     |   
+
+
+- Fechar a Conta
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |               
+Fluxo Principal  |   
+Fluxo Alternativo|   
+Pós-condição     |   
+
+
+- Registrar pagamento e encerrar
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |    Usuário do Sistema
+Pré-condição     |               
+Fluxo Principal  |   
+Fluxo Alternativo|   
+Pós-condição     |   
