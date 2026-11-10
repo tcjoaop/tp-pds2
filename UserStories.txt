@@ -1,8 +1,8 @@
 - Autentificar Usuário
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |    Usuário cadastrado e ativo.           
+Ator principal   |   Usuário do Sistema
+Pré-condição     |   Usuário cadastrado e ativo.           
 Fluxo Principal  |   1. O usuário informa login e senha.
                  |   2. O sistema valida as credenciais.
                  |   3. O sistema identifica o perfil e as permissões.
@@ -14,8 +14,8 @@ Pós-condição     |   Usuário autenticado e identificado nas operações segu
 - Abrir Pedido
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Garçom / Atendente
-Pré-condição     |    Usuário autenticado; mesa/modalidade disponível.           
+Ator principal   |   Garçom / Atendente
+Pré-condição     |   Usuário autenticado; mesa/modalidade disponível.           
 Fluxo Principal  |   1. O atendente seleciona a mesa ou modalidade de atendimento.
                  |   2. O sistema verifica disponibilidade.
                  |   3. O atendente confirma a abertura.
@@ -28,48 +28,69 @@ Pós-condição     |   Pedido criado no estado ABERTO.
 - Adicionar item ao Pedido
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |               
-Fluxo Principal  |   
-Fluxo Alternativo|   
-Pós-condição     |   
+Ator principal   |   Garçom / Atendente
+Pré-condição     |   Pedido aberto.           
+Fluxo Principal  |   1. O atendente pesquisa ou seleciona um produto.
+                 |   2. Informa quantidade e observações, se houver.
+                 |   3. O sistema valida disponibilidade e quantidade.
+                 |   4. O sistema registra preço unitário e calcula subtotal.
+                 |   5. O total parcial do pedido é atualizado.      
+Fluxo Alternativo|   Produto indisponível ou quantidade inválida: inclusão recusada.
+Pós-condição     |   Item registrado no pedido.
 -------------------------------------------------
 
 - Enviar itens a cozinha
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |               
-Fluxo Principal  |   
-Fluxo Alternativo|   
-Pós-condição     |   
+Ator principal   |   Garçom / Sistema
+Pré-condição     |   Pedido com pelo menos um item ainda não enviado.           
+Fluxo Principal  |   1. O atendente confirma o envio.
+                 |   2. O sistema registra o horário de envio dos itens. 
+                 |   3. Os itens aparecem na fila da cozinha.
+                 |   4. O status operacional passa a indicar aguardando preparo.     
+Fluxo Alternativo|   Nenhum item pendente de envio: o sistema não cria nova remessa.
+Pós-condição     |   tens disponíveis para produção.
 ------------------------------------------------
 
 - Atualizar preparo
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |               
-Fluxo Principal  |   
-Fluxo Alternativo|   
-Pós-condição     |   
-
+Ator principal   |   Cozinha
+Pré-condição     |   Existem itens aguardando preparo.           
+Fluxo Principal  |   1. A cozinha seleciona o pedido/item.
+                 |   2. Marca como EM PREPARO.  
+                 |   3. Ao concluir, marca como PRONTO.
+                 |   4. O sistema registra usuário e horários. 
+                 |   5. O salão recebe a indicação de que o item pode ser entregue.     
+Fluxo Alternativo|   Transição inválida: o sistema rejeita a mudança.
+Pós-condição     |   Estado do item atualizado e rastreado.
+-------------------------------------------------
 
 - Fechar a Conta
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |               
-Fluxo Principal  |   
-Fluxo Alternativo|   
-Pós-condição     |   
-
+Ator principal   |   Garçom / Caixa
+Pré-condição     |   Pedido ativo com consumo registrado.     
+Fluxo Principal  |   1. O usuário solicita o fechamento.
+                 |   2. O sistema reúne os itens válidos e calcula subtotal. 
+                 |   3. Aplica taxa de serviço configurada.
+                 |   4. Aplica desconto quando autorizado.
+                 |   5. Exibe total final e saldo a pagar.    
+Fluxo Alternativo|   Há inconsistência ou item pendente de validação: o sistema solicita correção antes de prosseguir.
+Pós-condição     |   Conta pronta para recebimento.
+-------------------------------------------------
 
 - Registrar pagamento e encerrar
 Elemento        |     Descrição
 -------------------------------------------------
-Ator principal   |    Usuário do Sistema
-Pré-condição     |               
-Fluxo Principal  |   
-Fluxo Alternativo|   
-Pós-condição     |   
+Ator principal   |   Caixa
+Pré-condição     |   Conta calculada e usuário autorizado.       
+Fluxo Principal  |   1. O caixa seleciona a forma de pagamento.
+                 |   2. Informa o valor recebido. 
+                 |   3. O sistema atualiza o saldo restante.
+                 |   4. Se houver dinheiro, calcula o troco.
+                 |   5. Quando o saldo chega a zero, o sistema finaliza o pedido.
+                 |   6. A mesa é liberada quando aplicável.    
+Fluxo Alternativo|   Pagamento parcial: o pedido permanece aguardando pagamento até completar o total.
+Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
+-------------------------------------------------
