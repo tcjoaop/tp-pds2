@@ -1,6 +1,9 @@
 #include "../documentation/sistema_restaurante.hpp"
 #include <iostream>
 
+SistemaRestaurante::SistemaRestaurante(const std::string& caminhoBancoDados)
+    : bancoDados(caminhoBancoDados), autenticacao(bancoDados) {}
+
 bool SistemaRestaurante::inicializar() {
     if (!bancoDados.conectar()) {
         std::cerr << "Falha ao conectar ao banco de dados." << std::endl;

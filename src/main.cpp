@@ -8,7 +8,7 @@
 #include "../documentation/perfil.hpp"
 
 int main() {
-    SistemaRestaurante sistema("caminho/para/banco_de_dados.db");
+    SistemaRestaurante sistema("banco_dados.json");
     if (!sistema.inicializar()) {
         std::cerr << "Falha ao inicializar o sistema." << std::endl;
         return 1;
