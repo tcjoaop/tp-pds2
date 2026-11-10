@@ -20,6 +20,8 @@ public:
         int quantidade, 
         double precoUnitario, 
         const std::string& observacoes = "");
+    ItemPedido(const ItemPedido& outro);
+    ItemPedido& operator=(const ItemPedido& outro);
     ~ItemPedido();
 
     int getId() const;
