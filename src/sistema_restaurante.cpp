@@ -577,8 +577,213 @@ void SistemaRestaurante::moduloPedidos() {
 }
 
 void SistemaRestaurante::moduloCozinha() {
-    std::cout << "=== MODULO COZINHA ===" << std::endl;
-    // Implementar funcionalidades do módulo de cozinha
+    if (!autenticacao.possuiPermissao(PerfilAcesso::COZINHEIRO)) {
+        std::cout << "\nAcesso negado. Voce nao possui permissao para acessar o modulo da cozinha.\n" << std::endl;
+        return;
+    }
+
+    int opcao = -1;
+    while (opcao != 0) {
+        std::cout << "\n========================================" << std::endl;
+        std::cout << "            MODULO DA COZINHA           " << std::endl;
+        std::cout << "========================================" << std::endl;
+        std::cout << "1. Ver fila de itens para preparo" << std::endl;
+        std::cout << "2. Iniciar preparo de um item" << std::endl;
+        std::cout << "3. Marcar item como pronto" << std::endl;
+        std::cout << "4. Marcar item como entregue" << std::endl;
+        std::cout << "0. Voltar ao menu principal" << std::endl;
+        std::cout << "Escolha uma opcao: ";
+
+        if (!(std::cin >> opcao)) {
+            std::cin.clear();
+            std::string d;
+            std::cin >> d;
+            std::cout << "Entrada invalida. Digite um numero." << std::endl;
+            continue;
+        }
+
+        switch (opcao) {
+            case 1: {
+                std::vector<Pedido> pedidos = bancoDados.listarPedidos();
+                std::cout << "\n--- FILA DE PRODUCAO NA COZINHA ---" << std::endl;
+                bool haItens = false;
+
+                for (const auto& ped : pedidos) {
+                    if (ped.getStatus() != StatusPedido::CANCELADO &&
+                        ped.getStatus() != StatusPedido::FINALIZANDO) {
+                        for (const auto& item : ped.getItens()) {
+                            if (item.getStatus() == StatusItemPedido::PENDENTE ||
+                                item.getStatus() == StatusItemPedido::ENVIADO_COZINHA ||
+                                item.getStatus() == StatusItemPedido::EM_PREPARO) {
+                                haItens = true;
+                                std::string statusStr;
+                                switch (item.getStatus()) {
+                                    case StatusItemPedido::PENDENTE: statusStr = "PENDENTE"; break;
+                                    case StatusItemPedido::ENVIADO_COZINHA: statusStr = "NA FILA"; break;
+                                    case StatusItemPedido::EM_PREPARO: statusStr = "NO FOGO / EM PREPARO"; break;
+                                    default: statusStr = "OUTRO"; break;
+                                }
+                                int mesaNum = (ped.getMesa() != nullptr) ? ped.getMesa()->getNumero() : -1;
+                                std::cout << "Pedido #" << ped.getId()
+                                          << " (Mesa " << (mesaNum != -1 ? std::to_string(mesaNum) : "Balcao") << ")"
+                                          << " | Item ID: " << item.getId()
+                                          << " | Prato: " << item.getProduto().getNome()
+                                          << " x" << item.getQuantidade()
+                                          << " | Tempo Est.: " << item.getProduto().getTempoPreparo() << " min"
+                                          << " | Status: [" << statusStr << "]";
+                                if (!item.getObservacoes().empty()) {
+                                    std::cout << " -> OBS: " << item.getObservacoes();
+                                }
+                                std::cout << std::endl;
+                            }
+                        }
+                    }
+                }
+                if (!haItens) {
+                    std::cout << "Nenhum item pendente na cozinha no momento." << std::endl;
+                }
+                break;
+            }
+            case 2: {
+                std::cout << "\n--- INICIAR PREPARO DE ITEM ---" << std::endl;
+                int idPedido, idItem;
+                std::cout << "Digite o ID do pedido: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                std::cout << "Digite o ID do item a preparar: ";
+                std::cin >> idItem;
+
+                ItemPedido* item = pedido->buscarItem(idItem);
+                if (item == nullptr) {
+                    std::cout << "[ERRO] Item ID " << idItem << " nao encontrado no pedido." << std::endl;
+                } else if (item->getStatus() == StatusItemPedido::CANCELADO) {
+                    std::cout << "[ERRO] Este item foi cancelado." << std::endl;
+                } else if (item->getStatus() == StatusItemPedido::EM_PREPARO) {
+                    std::cout << "[AVISO] Este item ja esta em preparo." << std::endl;
+                } else if (item->getStatus() == StatusItemPedido::PRONTO || item->getStatus() == StatusItemPedido::ENTREGUE) {
+                    std::cout << "[AVISO] Este item ja foi concluido ou entregue." << std::endl;
+                } else {
+                    item->setStatus(StatusItemPedido::EM_PREPARO);
+                    pedido->alterarStatus(StatusPedido::EM_PREPARO);
+                    if (bancoDados.salvarPedido(*pedido)) {
+                        std::cout << "[SUCESSO] Item '" << item->getProduto().getNome() 
+                                  << "' agora esta EM PREPARO!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao atualizar pedido no banco." << std::endl;
+                    }
+                }
+                delete pedido;
+                break;
+            }
+            case 3: {
+                std::cout << "\n--- MARCAR ITEM COMO PRONTO ---" << std::endl;
+                int idPedido, idItem;
+                std::cout << "Digite o ID do pedido: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                std::cout << "Digite o ID do item pronto: ";
+                std::cin >> idItem;
+
+                ItemPedido* item = pedido->buscarItem(idItem);
+                if (item == nullptr) {
+                    std::cout << "[ERRO] Item ID " << idItem << " nao encontrado no pedido." << std::endl;
+                } else if (item->getStatus() == StatusItemPedido::CANCELADO) {
+                    std::cout << "[ERRO] Este item foi cancelado." << std::endl;
+                } else if (item->getStatus() == StatusItemPedido::PRONTO) {
+                    std::cout << "[AVISO] Este item ja esta marcado como pronto." << std::endl;
+                } else {
+                    item->setStatus(StatusItemPedido::PRONTO);
+                    
+                    // Verifica se todos os itens estao prontos
+                    bool todosProntos = true;
+                    for (const auto& i : pedido->getItens()) {
+                        if (i.getStatus() != StatusItemPedido::PRONTO && 
+                            i.getStatus() != StatusItemPedido::ENTREGUE &&
+                            i.getStatus() != StatusItemPedido::CANCELADO) {
+                            todosProntos = false;
+                            break;
+                        }
+                    }
+                    if (todosProntos) {
+                        pedido->alterarStatus(StatusPedido::PRONTO);
+                    }
+
+                    if (bancoDados.salvarPedido(*pedido)) {
+                        std::cout << "[SUCESSO] Item '" << item->getProduto().getNome() 
+                                  << "' PRONTO para ser servido!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao atualizar pedido no banco." << std::endl;
+                    }
+                }
+                delete pedido;
+                break;
+            }
+            case 4: {
+                std::cout << "\n--- MARCAR ITEM COMO ENTREGUE ---" << std::endl;
+                int idPedido, idItem;
+                std::cout << "Digite o ID do pedido: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                std::cout << "Digite o ID do item entregue a mesa: ";
+                std::cin >> idItem;
+
+                ItemPedido* item = pedido->buscarItem(idItem);
+                if (item == nullptr) {
+                    std::cout << "[ERRO] Item ID " << idItem << " nao encontrado no pedido." << std::endl;
+                } else if (item->getStatus() != StatusItemPedido::PRONTO) {
+                    std::cout << "[AVISO] Apenas itens marcados como PRONTOS podem ser entregues a mesa." << std::endl;
+                } else {
+                    item->setStatus(StatusItemPedido::ENTREGUE);
+
+                    // Se todos os itens foram entregues, atualiza status do pedido
+                    bool todosEntregues = true;
+                    for (const auto& i : pedido->getItens()) {
+                        if (i.getStatus() != StatusItemPedido::ENTREGUE && 
+                            i.getStatus() != StatusItemPedido::CANCELADO) {
+                            todosEntregues = false;
+                            break;
+                        }
+                    }
+                    if (todosEntregues) {
+                        pedido->alterarStatus(StatusPedido::ENTREGUE);
+                    }
+
+                    if (bancoDados.salvarPedido(*pedido)) {
+                        std::cout << "[SUCESSO] Item '" << item->getProduto().getNome() 
+                                  << "' entregue com sucesso a mesa!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao atualizar pedido no banco." << std::endl;
+                    }
+                }
+                delete pedido;
+                break;
+            }
+            case 0:
+                std::cout << "Retornando ao menu principal..." << std::endl;
+                break;
+            default:
+                std::cout << "Opcao invalida. Tente novamente." << std::endl;
+                break;
+        }
+    }
 }
 
 void SistemaRestaurante::moduloCaixa() {
