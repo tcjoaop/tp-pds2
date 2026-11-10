@@ -1,6 +1,6 @@
 #ifndef MESA_HPP
 #define MESA_HPP
-#include <string>
+#include "tipos.hpp"
 
 class Mesa {
 private:

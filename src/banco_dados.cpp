@@ -4,6 +4,7 @@
 #include "../documentation/mesa.hpp"
 #include "../documentation/pedido.hpp"
 #include "../documentation/json.hpp"
+#include "../documentation/tipos.hpp"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -273,7 +274,7 @@ std::vector<Mesa> BancoDados::listarMesas() {
         Mesa mesa(u["id"].get<int>(),
                   u["numero"].get<int>(),
                   u["capacidade"].get<int>(),
-                  u["status"].get<int>());
+                  static_cast<StatusMesa>(u["status"].get<int>()));
         mesas.push_back(mesa);
     }
 
@@ -365,7 +366,7 @@ Mesa* BancoDados::buscarMesaPorId(int id) {
             Mesa* mesa = new Mesa(u["id"].get<int>(),
                                    u["numero"].get<int>(),
                                    u["capacidade"].get<int>(),
-                                   u["status"].get<int>());
+                                   static_cast<StatusMesa>(u["status"].get<int>()));
             return mesa;
         }
     }

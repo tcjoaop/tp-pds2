@@ -5,7 +5,6 @@
 #include <fstream>
 #include "usuario.hpp"
 #include "produto.hpp"
-#include "mesa.hpp"
 #include "pedido.hpp"
 
 
