@@ -2,10 +2,27 @@
   "usuarios": {
     "admin": {
       "nome": "Admin",
-      "senha": "123"
+      "id": 1,
+      "login": "admin",
+      "senha": "123",
+      "permissoes": ["admin"]
     }
   },
   "produtos": [],
   "mesas": [],
-  "pedidos": []
+  "pedidos": [],
+  "perfis": {
+    "ADMINISTRADOR": {
+      "permissoes": ["admin"]
+    },
+    "GARCOM": {
+      "permissoes": ["gerenciar_pedidos", "visualizar_mesas"]
+    },
+    "COZINHEIRO": {
+      "permissoes": ["visualizar_pedidos"]
+    },
+    "CAIXA": {
+      "permissoes": ["gerenciar_pagamentos"]
+    }
+  }
 }

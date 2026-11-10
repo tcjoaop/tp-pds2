@@ -299,3 +299,97 @@ std::vector<Pedido> BancoDados::listarPedidos() {
 
     return pedidos;
 }
+
+Usuario* BancoDados::buscarUsuarioPorLogin(const std::string& login) {
+    std::ifstream arquivo(caminhoArquivo);
+    if (!arquivo.is_open()) {
+        return nullptr;
+    }
+
+    json dados;
+    arquivo >> dados;
+    arquivo.close();
+
+    for (const auto& u : dados["usuarios"]) {
+        if (u["login"] == login) {
+            Usuario* usuario = new Usuario(u["id"].get<int>(),
+                                           u["nome"].get<std::string>(),
+                                           u["login"].get<std::string>(),
+                                           u["senha"].get<std::string>(),
+                                           Perfil(u["id"].get<int>(), 
+                                                u["nome"].get<std::string>(),
+                                                u["permissoes"].get<std::vector<std::string>>()));
+            return usuario;
+        }
+    }
+
+    return nullptr;
+}
+
+Produto* BancoDados::buscarProdutoPorId(int id) {
+    std::ifstream arquivo(caminhoArquivo);
+    if (!arquivo.is_open()) {
+        return nullptr;
+    }
+
+    json dados;
+    arquivo >> dados;
+    arquivo.close();
+
+    for (const auto& u : dados["produtos"]) {
+        if (u["id"] == id) {
+            Produto* produto = new Produto(u["id"].get<int>(),
+                                            u["nome"].get<std::string>(),
+                                            u["preco"].get<int>(),
+                                            u["disponivel"].get<bool>(),
+                                            u["tempoPreparo"].get<int>());
+            return produto;
+        }
+    }
+
+    return nullptr;
+}
+
+Mesa* BancoDados::buscarMesaPorId(int id) {
+    std::ifstream arquivo(caminhoArquivo);
+    if (!arquivo.is_open()) {
+        return nullptr;
+    }
+
+    json dados;
+    arquivo >> dados;
+    arquivo.close();
+
+    for (const auto& u : dados["mesas"]) {
+        if (u["id"] == id) {
+            Mesa* mesa = new Mesa(u["id"].get<int>(),
+                                   u["numero"].get<int>(),
+                                   u["capacidade"].get<int>(),
+                                   u["status"].get<int>());
+            return mesa;
+        }
+    }
+
+    return nullptr;
+}
+
+Pedido* BancoDados::buscarPedidoPorId(int id) {
+    std::ifstream arquivo(caminhoArquivo);
+    if (!arquivo.is_open()) {
+        return nullptr;
+    }
+
+    json dados;
+    arquivo >> dados;
+    arquivo.close();
+
+    for (const auto& u : dados["pedidos"]) {
+        if (u["id"] == id) {
+            Pedido* pedido = new Pedido(u["id"].get<int>(),
+                                         u["dataHoraAbertura"].get<std::string>());
+            return pedido;
+        }
+    }
+
+    return nullptr;
+}
