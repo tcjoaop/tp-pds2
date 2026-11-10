@@ -77,7 +77,7 @@ bool BancoDados::salvarUsuario(const Usuario& usuario) {
         {"id", usuario.getId()},
         {"login", usuario.getLogin()},
         {"senha", usuario.getSenha()},
-        {"permissoes", usuario.getPerfil().getPermissoes()}
+        {"perfil", static_cast<int>(usuario.getPerfil())}
     };
 
     bool encontrado = false;
@@ -317,9 +317,7 @@ Usuario* BancoDados::buscarUsuarioPorLogin(const std::string& login) {
                                            u["nome"].get<std::string>(),
                                            u["login"].get<std::string>(),
                                            u["senha"].get<std::string>(),
-                                           Perfil(u["id"].get<int>(), 
-                                                u["nome"].get<std::string>(),
-                                                u["permissoes"].get<std::vector<std::string>>()));
+                                           static_cast<PerfilAcesso>(u["perfil"].get<int>()));
             return usuario;
         }
     }

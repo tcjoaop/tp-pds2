@@ -1,7 +1,8 @@
 #ifndef USUARIO_HPP
 #define USUARIO_HPP
+
 #include <string>
-#include "Perfil.hpp"
+#include "tipos.hpp"
 
 class Usuario {
 private:
@@ -9,21 +10,21 @@ private:
     std::string nome;
     std::string login;
     std::string senha;
-    Perfil perfil;
+    PerfilAcesso perfil;
 
 public:
-    Usuario(int id, const std::string& nome, const std::string& login, const std::string& senha, const Perfil& perfil);
+    Usuario(int id, const std::string& nome, const std::string& login, const std::string& senha, PerfilAcesso perfil);
 
     int getId() const;
     std::string getNome() const;
     std::string getLogin() const;
     std::string getSenha() const;
-    Perfil getPerfil() const;
+    PerfilAcesso getPerfil() const;
 
     void setNome(const std::string& nome);
     void setLogin(const std::string& login);
     void setSenha(const std::string& senha);
-    void setPerfil(const Perfil& perfil);
+    void setPerfil(PerfilAcesso perfil);
 };
 
 #endif

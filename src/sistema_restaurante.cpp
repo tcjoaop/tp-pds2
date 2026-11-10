@@ -44,6 +44,7 @@ void SistemaRestaurante::exibirTelaPrincipal() {
     std::cout << "4. Modulo Caixa" << std::endl;
     std::cout << "5. Modulo Relatorios" << std::endl;
     std::cout << "6. Modulo Cadastros" << std::endl;
+    std::cout << "7. Logout" << std::endl;
     std::cout << "0. Sair" << std::endl;
 
     int opcao;
@@ -69,6 +70,11 @@ void SistemaRestaurante::exibirTelaPrincipal() {
         case 6:
             moduloCadastros();
             break;
+        case 7:
+            autenticacao.logout();
+            std::cout << "Logout realizado com sucesso." << std::endl;
+            exibirTelaLogin();
+            return;
         case 0:
             autenticacao.logout();
             bancoDados.desconectar();
@@ -82,7 +88,11 @@ void SistemaRestaurante::exibirTelaPrincipal() {
 
 void SistemaRestaurante::moduloMesas() {
     std::cout << "=== MODULO MESAS ===" << std::endl;
-    // Implementar funcionalidades do módulo de mesas
+    
+    if(!autenticacao.possuiPermissao(PerfilAcesso::GARCOM)) {
+        std::cout << "Acesso negado. Voce nao possui permissao para gerenciar mesas." << std::endl;
+        return;
+    }
 }
 
 void SistemaRestaurante::moduloPedidos() {
