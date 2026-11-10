@@ -5,18 +5,62 @@
             "id": 1,
             "numero": 1,
             "status": 1
+        },
+        {
+            "capacidade": 2,
+            "id": 2,
+            "numero": 2,
+            "status": 0
+        },
+        {
+            "capacidade": 6,
+            "id": 3,
+            "numero": 3,
+            "status": 0
         }
     ],
     "pedidos": [
         {
             "dataHoraAbertura": "2026-11-10 12:00:00",
             "id": 1,
-            "itens": [],
+            "itens": [
+                {
+                    "id": 1,
+                    "observacoes": "",
+                    "precoUnitario": 15.0,
+                    "produtoId": 1,
+                    "produtoNome": "x-bacon",
+                    "quantidade": 1,
+                    "status": 0
+                }
+            ],
             "mesaId": 1,
             "status": 0
         }
     ],
-    "produtos": [],
+    "produtos": [
+        {
+            "disponivel": true,
+            "id": 1,
+            "nome": "x-bacon",
+            "preco": 15,
+            "tempoPreparo": 15
+        },
+        {
+            "disponivel": true,
+            "id": 2,
+            "nome": "fritas",
+            "preco": 10,
+            "tempoPreparo": 10
+        },
+        {
+            "disponivel": true,
+            "id": 3,
+            "nome": "refrigerante",
+            "preco": 3,
+            "tempoPreparo": 2
+        }
+    ],
     "usuarios": [
         {
             "id": 1,
@@ -24,6 +68,20 @@
             "nome": "Administrador",
             "perfil": 0,
             "senha": "3288171798096025883"
+        },
+        {
+            "id": 2,
+            "login": "garcom",
+            "nome": "garcom",
+            "perfil": 2,
+            "senha": "10089081994332581363"
+        },
+        {
+            "id": 3,
+            "login": "cozinheiro",
+            "nome": "cozinheiro",
+            "perfil": 3,
+            "senha": "10089081994332581363"
         }
     ]
 }

@@ -6,6 +6,27 @@ ItemPedido::ItemPedido(int id,
         double precoUnitario, 
         const std::string& observacoes) : id(id), produto(new Produto(produto)), quantidade(quantidade), precoUnitario(precoUnitario), observacoes(observacoes), status(StatusItemPedido::PENDENTE) {}
 
+ItemPedido::ItemPedido(const ItemPedido& outro)
+    : id(outro.id),
+      produto(outro.produto ? new Produto(*outro.produto) : nullptr),
+      quantidade(outro.quantidade),
+      precoUnitario(outro.precoUnitario),
+      observacoes(outro.observacoes),
+      status(outro.status) {}
+
+ItemPedido& ItemPedido::operator=(const ItemPedido& outro) {
+    if (this != &outro) {
+        delete produto;
+        id = outro.id;
+        produto = outro.produto ? new Produto(*outro.produto) : nullptr;
+        quantidade = outro.quantidade;
+        precoUnitario = outro.precoUnitario;
+        observacoes = outro.observacoes;
+        status = outro.status;
+    }
+    return *this;
+}
+
 ItemPedido::~ItemPedido(){
     delete produto;
 }
