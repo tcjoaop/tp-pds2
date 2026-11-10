@@ -9,7 +9,7 @@
 int main() {
     std::cout << "=== TESTE DE BANCO DE DADOS E AUTENTICACAO ===" << std::endl;
     // 1. Inicializa o banco de dados
-    BancoDados bd("banco_teste.json");
+    BancoDados bd("banco_dados.json");
     bd.criarEstruturaInicial();
     // 2. Cria um usuário de teste (caso ainda não exista)
     // OBS: Como sua Autenticacao usa hash simples, geramos o hash da senha "admin123"

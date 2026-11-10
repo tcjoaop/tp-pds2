@@ -1,28 +1,41 @@
 {
-  "usuarios": {
-    "admin": {
-      "nome": "Admin",
-      "id": 1,
-      "login": "admin",
-      "senha": "123",
-      "permissoes": ["admin"]
+    "mesas": [],
+    "pedidos": [],
+    "perfis": {
+        "ADMINISTRADOR": {
+            "permissoes": [
+                "admin"
+            ]
+        },
+        "CAIXA": {
+            "permissoes": [
+                "gerenciar_pagamentos"
+            ]
+        },
+        "COZINHEIRO": {
+            "permissoes": [
+                "visualizar_pedidos"
+            ]
+        },
+        "GARCOM": {
+            "permissoes": [
+                "gerenciar_pedidos",
+                "visualizar_mesas"
+            ]
+        }
+    },
+    "produtos": [],
+    "usuarios": {
+        "admin": {
+            "id": 1,
+            "login": "admin",
+            "nome": "Joao Administrador",
+            "permissoes": [
+                "ADMIN",
+                "GERENTE",
+                "CAIXA"
+            ],
+            "senha": "3288171798096025883"
+        }
     }
-  },
-  "produtos": [],
-  "mesas": [],
-  "pedidos": [],
-  "perfis": {
-    "ADMINISTRADOR": {
-      "permissoes": ["admin"]
-    },
-    "GARCOM": {
-      "permissoes": ["gerenciar_pedidos", "visualizar_mesas"]
-    },
-    "COZINHEIRO": {
-      "permissoes": ["visualizar_pedidos"]
-    },
-    "CAIXA": {
-      "permissoes": ["gerenciar_pagamentos"]
-    }
-  }
 }

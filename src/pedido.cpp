@@ -3,8 +3,8 @@
 
 Pedido::Pedido(int id,
           const std::string& dataHoraAbertura,
-          Mesa* mesa,
           Usuario* atendente,
+          Mesa* mesa,
           Cliente* cliente) : id(id), dataHoraAbertura(dataHoraAbertura), status(StatusPedido::ABERTO), mesa(mesa), atendente(atendente), cliente(cliente), taxaServicoPercentual(0.0), desconto(0.0) {}
 Pedido::~Pedido() {}
 
