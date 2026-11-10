@@ -1,7 +1,7 @@
 #ifndef PRODUTO_HPP
 #define PRODUTO_HPP
 #include <string>
-#include "Categoria.hpp"
+#include "categoria.hpp"
 
 class Produto {
 private:
