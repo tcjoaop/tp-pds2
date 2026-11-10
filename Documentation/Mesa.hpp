@@ -1,7 +1,5 @@
 #ifndef MESA_HPP
 #define MESA_HPP
-#include <string>
-#include "pedido.hpp"
 #include "tipos.hpp"
 
 class Mesa {

@@ -9,7 +9,7 @@ Autenticacao::~Autenticacao() {
 
 bool Autenticacao::login(const std::string& login, const std::string& senha) {
     if (estaLogado()) {
-        return false; // Já está logado
+        return false; // Ja esta logado
     }
 
     Usuario* usuario = bancoDados.buscarUsuarioPorLogin(login);
@@ -18,7 +18,8 @@ bool Autenticacao::login(const std::string& login, const std::string& senha) {
         return true; // Login bem-sucedido
     }
 
-    return false; // Login falhou
+    delete usuario; // Se falhou a validacao, desaloca a busca
+    return false;   // Login falhou
 }
 
 bool Autenticacao::estaLogado() const {
@@ -29,17 +30,22 @@ Usuario* Autenticacao::getUsuarioLogado() const {
     return usuarioLogado;
 }
 
-bool Autenticacao::possuiPermissao(const std::string& permissao) const {
+bool Autenticacao::possuiPermissao(PerfilAcesso perfilNecessario) const {
     if (!estaLogado()) {
-        return false; // Nenhum usuário logado
+        return false;
     }
 
-    Perfil perfil = usuarioLogado->getPerfil();
-    return perfil.possuiPermissao(permissao);
+    PerfilAcesso perfilAtual = usuarioLogado->getPerfil();
+
+    // ADMINISTRADOR tem acesso irrestrito a qualquer operacao
+    if (perfilAtual == PerfilAcesso::ADMINISTRADOR) {
+        return true;
+    }
+
+    return perfilAtual == perfilNecessario;
 }
 
 std::string Autenticacao::hashSenha(const std::string& senha) const {
-    // Implementação de hash de senha (exemplo simples)
     std::hash<std::string> hasher;
     return std::to_string(hasher(senha));
 }
@@ -49,5 +55,8 @@ bool Autenticacao::validarSenha(const std::string& senha, const std::string& has
 }
 
 void Autenticacao::logout() {
-    usuarioLogado = nullptr;
+    if (usuarioLogado) {
+        delete usuarioLogado;
+        usuarioLogado = nullptr;
+    }
 }

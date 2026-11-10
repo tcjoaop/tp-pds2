@@ -24,6 +24,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $^ -o $@
+	chmod +x $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@

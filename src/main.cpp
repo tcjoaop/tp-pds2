@@ -1,12 +1,18 @@
 #include <iostream>
-#include "../documentation/cliente.hpp"
+#include <vector>
+#include <string>
+#include "../documentation/banco_dados.hpp"
+#include "../documentation/autenticacao.hpp"
+#include "../documentation/sistema_restaurante.hpp"
+#include "../documentation/usuario.hpp"
+#include "../documentation/perfil.hpp"
 
-int main(){
-
-    Cliente cliente1(1, "João", "123456789");
-
-    std::cout << "ID: " << cliente1.getId() << std::endl;
-    std::cout << "Nome: " << cliente1.getNome() << std::endl;
-
+int main() {
+    SistemaRestaurante sistema("banco_dados.json");
+    if (!sistema.inicializar()) {
+        std::cerr << "Falha ao inicializar o sistema." << std::endl;
+        return 1;
+    }
+    sistema.executar();
     return 0;
 }

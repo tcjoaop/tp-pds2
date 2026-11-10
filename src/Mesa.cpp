@@ -1,4 +1,4 @@
-#include "../documentation/Mesa.hpp"
+#include "../documentation/mesa.hpp"
 #include <iostream>
 #include "../documentation/tipos.hpp"
 
@@ -37,9 +37,9 @@ void Mesa::setStatus(const StatusMesa status){
 }
 
 void Mesa::ocupar(Mesa& Mesa){
-    Mesa = StatusMesa::OCUPADA;
+    this->status = StatusMesa::OCUPADA;
 }
 
 void Mesa::liberar(Mesa& Mesa){
-    Mesa = StatusMesa::LIVRE;
+    this->status = StatusMesa::LIVRE;
 }

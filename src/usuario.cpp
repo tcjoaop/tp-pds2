@@ -1,6 +1,7 @@
 #include "../documentation/usuario.hpp"
 
-Usuario::Usuario(const int id, const std::string& nome, const std::string& login, const std::string& senha, const Perfil& perfil) : id(id), nome(nome), login(login), senha(senha), perfil(perfil) {}
+Usuario::Usuario(const int id, const std::string& nome, const std::string& login, const std::string& senha, PerfilAcesso perfil)
+    : id(id), nome(nome), login(login), senha(senha), perfil(perfil) {}
 
 int Usuario::getId() const {
     return id;
@@ -18,7 +19,7 @@ std::string Usuario::getSenha() const {
     return senha;
 }
 
-Perfil Usuario::getPerfil() const {
+PerfilAcesso Usuario::getPerfil() const {
     return perfil;
 }
 
@@ -34,6 +35,6 @@ void Usuario::setSenha(const std::string& senha) {
     this->senha = senha;
 }
 
-void Usuario::setPerfil(const Perfil& perfil) {
+void Usuario::setPerfil(PerfilAcesso perfil) {
     this->perfil = perfil;
 }

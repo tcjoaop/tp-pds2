@@ -32,8 +32,6 @@ StatusItemPedido ItemPedido::getStatus() const{
 void ItemPedido::setQuantidade(int quantidade){
     if(quantidade > 0){
         this->quantidade = quantidade;
-    } else {
-        std::cout << "Quantidade inválida. A quantidade deve ser maior que zero." << std::endl;
     }
 }
 void ItemPedido::setObservacoes(const std::string& observacoes){

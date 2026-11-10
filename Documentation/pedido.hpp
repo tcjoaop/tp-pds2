@@ -31,8 +31,8 @@ private:
 public:
     Pedido(int id,
           const std::string& dataHoraAbertura,
+          Usuario* atendente = nullptr,
           Mesa* mesa = nullptr,
-          Usuario* atendente,
           Cliente* cliente = nullptr);
     ~Pedido();
 

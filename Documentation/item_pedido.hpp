@@ -36,3 +36,5 @@ public:
     double calcularSubtotal() const;
     bool podeSerCancelado() const;
 };
+
+#endif
