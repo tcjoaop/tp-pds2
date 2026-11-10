@@ -113,7 +113,7 @@ void Pedido::fecharPedido(const std::string& dataHoraFechamento){
         this->dataHoraFechamento = dataHoraFechamento;
         alterarStatus(StatusPedido::ENTREGUE);
         if(mesa != nullptr) {
-            mesa->alterarStatus(StatusMesa::LIVRE);
+            mesa->setStatus(StatusMesa::LIVRE);
         }
     } else {
         std::cout << "O pedido não pode ser fechado. Status atual: " << static_cast<int>(status) << std::endl;
@@ -123,7 +123,7 @@ void Pedido::fecharPedido(const std::string& dataHoraFechamento){
 void Pedido::cancelar(){
     alterarStatus(StatusPedido::CANCELADO);
     if(mesa != nullptr) {
-        mesa->alterarStatus(StatusMesa::LIVRE);
+        mesa->setStatus(StatusMesa::LIVRE);
     }
 }
 
