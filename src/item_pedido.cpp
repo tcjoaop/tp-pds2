@@ -1,10 +1,27 @@
 #include "../documentation/item_pedido.hpp"
+#include <stdexcept>
 
 ItemPedido::ItemPedido(int id, 
         const Produto& produto, 
         int quantidade, 
         double precoUnitario, 
-        const std::string& observacoes) : id(id), produto(new Produto(produto)), quantidade(quantidade), precoUnitario(precoUnitario), observacoes(observacoes), status(StatusItemPedido::PENDENTE) {}
+        const std::string& observacoes) {
+    if (id <= 0) {
+        throw std::invalid_argument("ID do item do pedido deve ser positivo.");
+    }
+    if (quantidade <= 0) {
+        throw std::invalid_argument("Quantidade de itens deve ser maior que zero.");
+    }
+    if (precoUnitario < 0.0) {
+        throw std::invalid_argument("Preco unitario nao pode ser negativo.");
+    }
+    this->id = id;
+    this->produto = new Produto(produto);
+    this->quantidade = quantidade;
+    this->precoUnitario = precoUnitario;
+    this->observacoes = observacoes;
+    this->status = StatusItemPedido::PENDENTE;
+}
 
 ItemPedido::ItemPedido(const ItemPedido& outro)
     : id(outro.id),
@@ -51,9 +68,10 @@ StatusItemPedido ItemPedido::getStatus() const{
 }
 
 void ItemPedido::setQuantidade(int quantidade){
-    if(quantidade > 0){
-        this->quantidade = quantidade;
+    if (quantidade <= 0) {
+        throw std::invalid_argument("Quantidade de itens deve ser maior que zero.");
     }
+    this->quantidade = quantidade;
 }
 void ItemPedido::setObservacoes(const std::string& observacoes){
     this->observacoes = observacoes;

@@ -1,6 +1,17 @@
 #include "../documentation/cliente.hpp"
+#include <stdexcept>
 
-Cliente::Cliente(int id, const std::string& nome, const std::string& telefone) : id(id), nome(nome), telefone(telefone) {}
+Cliente::Cliente(int id, const std::string& nome, const std::string& telefone) {
+    if (id <= 0) {
+        throw std::invalid_argument("ID do cliente deve ser positivo.");
+    }
+    if (nome.empty()) {
+        throw std::invalid_argument("Nome do cliente nao pode ser vazio.");
+    }
+    this->id = id;
+    this->nome = nome;
+    this->telefone = telefone;
+}
 
 int Cliente::getId() const {
     return id;
@@ -15,6 +26,9 @@ std::string Cliente::getTelefone() const {
 }
 
 void Cliente::setNome(const std::string& nome) {
+    if (nome.empty()) {
+        throw std::invalid_argument("Nome do cliente nao pode ser vazio.");
+    }
     this->nome = nome;
 }
 

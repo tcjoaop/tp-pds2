@@ -1,11 +1,24 @@
 #include "../documentation/pedido.hpp"
 #include <iostream>
+#include <stdexcept>
 
 Pedido::Pedido(int id,
           const std::string& dataHoraAbertura,
           Usuario* atendente,
           Mesa* mesa,
-          Cliente* cliente) : id(id), dataHoraAbertura(dataHoraAbertura), status(StatusPedido::ABERTO), mesa(mesa), atendente(atendente), cliente(cliente), taxaServicoPercentual(0.0), desconto(0.0) {}
+          Cliente* cliente) {
+    if (id <= 0) {
+        throw std::invalid_argument("ID do pedido deve ser positivo.");
+    }
+    this->id = id;
+    this->dataHoraAbertura = dataHoraAbertura;
+    this->status = StatusPedido::ABERTO;
+    this->mesa = mesa;
+    this->atendente = atendente;
+    this->cliente = cliente;
+    this->taxaServicoPercentual = 0.0;
+    this->desconto = 0.0;
+}
 Pedido::~Pedido() {}
 
 int Pedido::getId() const {
@@ -90,10 +103,16 @@ double Pedido::calcularSaldoRestante() const{
 }
 
 void Pedido::setTaxaServicoPercentual(double taxa){
+    if (taxa < 0.0) {
+        throw std::invalid_argument("Taxa de servico nao pode ser negativa.");
+    }
     this->taxaServicoPercentual = taxa;
 }
 
 void Pedido::setDesconto(double desconto){
+    if (desconto < 0.0) {
+        throw std::invalid_argument("Desconto nao pode ser negativo.");
+    }
     this->desconto = desconto;
 }
 

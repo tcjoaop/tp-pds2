@@ -1,5 +1,39 @@
 #include "../documentation/sistema_restaurante.hpp"
 #include <iostream>
+#include <limits>
+#include <stdexcept>
+
+// Funcoes auxiliares de sanitizacao de entrada
+static void limparBufferEntrada() {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+static int lerInteiroSanitizado(const std::string& prompt) {
+    int valor;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> valor) {
+            limparBufferEntrada();
+            return valor;
+        }
+        std::cout << "[ERRO] Entrada invalida! Digite apenas numeros inteiros." << std::endl;
+        limparBufferEntrada();
+    }
+}
+
+static double lerDoubleSanitizado(const std::string& prompt) {
+    double valor;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> valor) {
+            limparBufferEntrada();
+            return valor;
+        }
+        std::cout << "[ERRO] Entrada invalida! Digite um valor numerico valido." << std::endl;
+        limparBufferEntrada();
+    }
+}
 
 SistemaRestaurante::SistemaRestaurante(const std::string& caminhoBancoDados)
     : bancoDados(caminhoBancoDados), autenticacao(bancoDados) {}
@@ -37,52 +71,57 @@ void SistemaRestaurante::exibirTelaLogin() {
 }
 
 void SistemaRestaurante::exibirTelaPrincipal() {
-    std::cout << "=== TELA PRINCIPAL ===" << std::endl;
-    std::cout << "1. Modulo Mesas" << std::endl;
-    std::cout << "2. Modulo Pedidos" << std::endl;
-    std::cout << "3. Modulo Cozinha" << std::endl;
-    std::cout << "4. Modulo Caixa" << std::endl;
-    std::cout << "5. Modulo Relatorios" << std::endl;
-    std::cout << "6. Modulo Cadastros" << std::endl;
-    std::cout << "7. Logout" << std::endl;
-    std::cout << "0. Sair" << std::endl;
+    try {
+        std::cout << "\n=== TELA PRINCIPAL ===" << std::endl;
+        std::cout << "1. Modulo Mesas" << std::endl;
+        std::cout << "2. Modulo Pedidos" << std::endl;
+        std::cout << "3. Modulo Cozinha" << std::endl;
+        std::cout << "4. Modulo Caixa" << std::endl;
+        std::cout << "5. Modulo Relatorios" << std::endl;
+        std::cout << "6. Modulo Cadastros" << std::endl;
+        std::cout << "7. Logout" << std::endl;
+        std::cout << "0. Sair" << std::endl;
 
-    int opcao;
-    std::cout << "Escolha uma opcao: ";
-    std::cin >> opcao;
+        int opcao = lerInteiroSanitizado("Escolha uma opcao: ");
 
-    switch (opcao) {
-        case 1:
-            moduloMesas();
-            break;
-        case 2:
-            moduloPedidos();
-            break;
-        case 3:
-            moduloCozinha();
-            break;
-        case 4:
-            moduloCaixa();
-            break;
-        case 5:
-            moduloRelatorios();
-            break;
-        case 6:
-            moduloCadastros();
-            break;
-        case 7:
-            autenticacao.logout();
-            std::cout << "Logout realizado com sucesso." << std::endl;
-            exibirTelaLogin();
-            return;
-        case 0:
-            autenticacao.logout();
-            bancoDados.desconectar();
-            return;
-        default:
-            std::cout << "Opcao invalida." << std::endl;
-            break;
+        switch (opcao) {
+            case 1:
+                moduloMesas();
+                break;
+            case 2:
+                moduloPedidos();
+                break;
+            case 3:
+                moduloCozinha();
+                break;
+            case 4:
+                moduloCaixa();
+                break;
+            case 5:
+                moduloRelatorios();
+                break;
+            case 6:
+                moduloCadastros();
+                break;
+            case 7:
+                autenticacao.logout();
+                std::cout << "Logout realizado com sucesso." << std::endl;
+                exibirTelaLogin();
+                return;
+            case 0:
+                autenticacao.logout();
+                bancoDados.desconectar();
+                return;
+            default:
+                std::cout << "Opcao invalida." << std::endl;
+                break;
+        }
+    } catch (const std::invalid_argument& e) {
+        std::cout << "\n[ERRO DE VALIDACAO] " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "\n[ERRO DO SISTEMA] " << e.what() << std::endl;
     }
+
     exibirTelaPrincipal(); // Volta para a tela principal após a operação
 }
 
