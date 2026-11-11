@@ -787,8 +787,251 @@ void SistemaRestaurante::moduloCozinha() {
 }
 
 void SistemaRestaurante::moduloCaixa() {
-    std::cout << "=== MODULO CAIXA ===" << std::endl;
-    // Implementar funcionalidades do módulo de caixa
+    if (!autenticacao.possuiPermissao(PerfilAcesso::CAIXA)) {
+        std::cout << "\nAcesso negado. Modulo exclusivo para caixas ou administradores.\n" << std::endl;
+        return;
+    }
+
+    int opcao = -1;
+    while (opcao != 0) {
+        std::cout << "\n========================================" << std::endl;
+        std::cout << "             MODULO DE CAIXA            " << std::endl;
+        std::cout << "========================================" << std::endl;
+        std::cout << "1. Listar pedidos pendentes de pagamento" << std::endl;
+        std::cout << "2. Consultar conta/extrato do pedido" << std::endl;
+        std::cout << "3. Aplicar taxa de servico / desconto" << std::endl;
+        std::cout << "4. Registrar pagamento" << std::endl;
+        std::cout << "5. Fechar conta e liberar mesa" << std::endl;
+        std::cout << "0. Voltar ao menu principal" << std::endl;
+        std::cout << "Escolha uma opcao: ";
+
+        if (!(std::cin >> opcao)) {
+            std::cin.clear();
+            std::string d;
+            std::cin >> d;
+            std::cout << "Entrada invalida. Digite um numero." << std::endl;
+            continue;
+        }
+
+        switch (opcao) {
+            case 1: {
+                std::vector<Pedido> pedidos = bancoDados.listarPedidos();
+                std::cout << "\n--- PEDIDOS AGUARDANDO PAGAMENTO OU ABERTOS ---" << std::endl;
+                bool encontrou = false;
+                for (const auto& ped : pedidos) {
+                    if (ped.getStatus() != StatusPedido::FINALIZANDO &&
+                        ped.getStatus() != StatusPedido::CANCELADO) {
+                        encontrou = true;
+                        int mesaNum = (ped.getMesa() != nullptr) ? ped.getMesa()->getNumero() : -1;
+                        std::cout << "Pedido #" << ped.getId()
+                                  << " | Mesa: " << (mesaNum != -1 ? std::to_string(mesaNum) : "Balcao")
+                                  << " | Total c/ taxa: R$ " << ped.calcularTotalComTaxa()
+                                  << " | Pago: R$ " << ped.calcularTotalPago()
+                                  << " | Restante: R$ " << ped.calcularSaldoRestante()
+                                  << std::endl;
+                    }
+                }
+                if (!encontrou) {
+                    std::cout << "Nenhum pedido pendente no momento." << std::endl;
+                }
+                break;
+            }
+            case 2: {
+                int idPedido;
+                std::cout << "Digite o ID do pedido: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                std::cout << "\n========================================" << std::endl;
+                std::cout << "       EXTRATO FINANCEIRO - PEDIDO #" << pedido->getId() << std::endl;
+                std::cout << "========================================" << std::endl;
+                if (pedido->getMesa() != nullptr) {
+                    std::cout << "Mesa: " << pedido->getMesa()->getNumero() << std::endl;
+                }
+                std::cout << "Itens Consumidos:" << std::endl;
+                for (const auto& item : pedido->getItens()) {
+                    if (item.getStatus() != StatusItemPedido::CANCELADO) {
+                        std::cout << "  - " << item.getProduto().getNome()
+                                  << " x" << item.getQuantidade()
+                                  << " (R$ " << item.getPrecoUnitario() << " un) = R$ "
+                                  << item.calcularSubtotal() << std::endl;
+                    }
+                }
+                std::cout << "----------------------------------------" << std::endl;
+                std::cout << "Subtotal dos itens: R$ " << pedido->calcularTotalSemTaxa() << std::endl;
+                std::cout << "Taxa de Servico:    R$ " << pedido->calcularTaxaServico() << std::endl;
+                std::cout << "Total a pagar:      R$ " << pedido->calcularTotalComTaxa() << std::endl;
+                std::cout << "Total ja pago:      R$ " << pedido->calcularTotalPago() << std::endl;
+                std::cout << "Saldo restante:     R$ " << pedido->calcularSaldoRestante() << std::endl;
+
+                if (!pedido->getPagamentos().empty()) {
+                    std::cout << "\nPagamentos Realizados:" << std::endl;
+                    for (const auto& pag : pedido->getPagamentos()) {
+                        std::string formaStr;
+                        switch (pag.getFormaPagamento()) {
+                            case FormaPagamento::DINHEIRO: formaStr = "DINHEIRO"; break;
+                            case FormaPagamento::CARTAO_CREDITO: formaStr = "CREDITO"; break;
+                            case FormaPagamento::CARTAO_DEBITO: formaStr = "DEBITO"; break;
+                            case FormaPagamento::PIX: formaStr = "PIX"; break;
+                        }
+                        std::cout << "  - Pagamento #" << pag.getId()
+                                  << " | " << formaStr
+                                  << " | R$ " << pag.getValor()
+                                  << " | " << pag.getDataHoraPagamento() << std::endl;
+                    }
+                }
+                std::cout << "========================================" << std::endl;
+
+                delete pedido;
+                break;
+            }
+            case 3: {
+                int idPedido;
+                std::cout << "Digite o ID do pedido: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                int escolha;
+                std::cout << "1. Definir percentual de taxa de servico\n"
+                          << "2. Conceder desconto em valor\n"
+                          << "Escolha: ";
+                std::cin >> escolha;
+
+                if (escolha == 1) {
+                    double taxa;
+                    std::cout << "Digite o percentual da taxa (ex: 10 para 10%): ";
+                    std::cin >> taxa;
+                    pedido->setTaxaServicoPercentual(taxa);
+                    std::cout << "[SUCESSO] Taxa de " << taxa << "% aplicada. Novo total: R$ "
+                              << pedido->calcularTotalComTaxa() << std::endl;
+                } else if (escolha == 2) {
+                    double desc;
+                    std::cout << "Digite o valor do desconto (R$): ";
+                    std::cin >> desc;
+                    pedido->setDesconto(desc);
+                    std::cout << "[SUCESSO] Desconto de R$ " << desc << " aplicado. Novo total: R$ "
+                              << pedido->calcularTotalComTaxa() << std::endl;
+                }
+
+                bancoDados.salvarPedido(*pedido);
+                delete pedido;
+                break;
+            }
+            case 4: {
+                int idPedido;
+                std::cout << "Digite o ID do pedido a pagar: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                double saldo = pedido->calcularSaldoRestante();
+                if (saldo <= 0.0) {
+                    std::cout << "[AVISO] Este pedido ja foi totalmente quitado!" << std::endl;
+                    delete pedido;
+                    break;
+                }
+
+                std::cout << "\nSaldo restante a pagar: R$ " << saldo << std::endl;
+                std::cout << "Escolha a forma de pagamento:\n"
+                          << "0. DINHEIRO\n"
+                          << "1. CARTAO CREDITO\n"
+                          << "2. CARTAO DEBITO\n"
+                          << "3. PIX\n"
+                          << "Opcao: ";
+                int opcForma;
+                std::cin >> opcForma;
+
+                FormaPagamento forma;
+                switch (opcForma) {
+                    case 0: forma = FormaPagamento::DINHEIRO; break;
+                    case 1: forma = FormaPagamento::CARTAO_CREDITO; break;
+                    case 2: forma = FormaPagamento::CARTAO_DEBITO; break;
+                    case 3: forma = FormaPagamento::PIX; break;
+                    default:
+                        std::cout << "[ERRO] Forma de pagamento invalida." << std::endl;
+                        delete pedido;
+                        continue;
+                }
+
+                double valorRecebido;
+                std::cout << "Digite o valor a pagar (R$): ";
+                std::cin >> valorRecebido;
+
+                if (valorRecebido <= 0.0) {
+                    std::cout << "[ERRO] Valor invalido." << std::endl;
+                    delete pedido;
+                    break;
+                }
+
+                double valorGravado = (valorRecebido > saldo) ? saldo : valorRecebido;
+                int pagId = static_cast<int>(pedido->getPagamentos().size()) + 1;
+                Pagamento novoPagamento(pagId, forma, valorGravado);
+
+                if (forma == FormaPagamento::DINHEIRO && valorRecebido > valorGravado) {
+                    double troco = valorRecebido - valorGravado;
+                    std::cout << ">>> TROCO A DEVOLVER: R$ " << troco << " <<<" << std::endl;
+                }
+
+                pedido->adicionarPagamento(novoPagamento);
+                bancoDados.salvarPedido(*pedido);
+
+                std::cout << "[SUCESSO] Pagamento registrado!" << std::endl;
+                std::cout << "Novo saldo restante: R$ " << pedido->calcularSaldoRestante() << std::endl;
+
+                delete pedido;
+                break;
+            }
+            case 5: {
+                int idPedido;
+                std::cout << "Digite o ID do pedido para fechar e liberar a mesa: ";
+                std::cin >> idPedido;
+
+                Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
+                if (pedido == nullptr) {
+                    std::cout << "[ERRO] Pedido ID " << idPedido << " nao encontrado." << std::endl;
+                    break;
+                }
+
+                if (pedido->calcularSaldoRestante() > 0.0) {
+                    std::cout << "[ERRO] O pedido ainda possui saldo pendente de R$ " 
+                              << pedido->calcularSaldoRestante() << ". Quite a conta antes de fechar." << std::endl;
+                    delete pedido;
+                    break;
+                }
+
+                pedido->fecharPedido("2026-11-10 13:00:00");
+                if (pedido->getMesa() != nullptr) {
+                    pedido->getMesa()->setStatus(StatusMesa::LIVRE);
+                    bancoDados.salvarMesa(*pedido->getMesa());
+                }
+                bancoDados.salvarPedido(*pedido);
+
+                std::cout << "[SUCESSO] Pedido #" << idPedido << " encerrado com sucesso e mesa liberada!" << std::endl;
+                delete pedido;
+                break;
+            }
+            case 0:
+                std::cout << "Retornando ao menu principal..." << std::endl;
+                break;
+            default:
+                std::cout << "Opcao invalida. Tente novamente." << std::endl;
+                break;
+        }
+    }
 }
 
 void SistemaRestaurante::moduloRelatorios() {

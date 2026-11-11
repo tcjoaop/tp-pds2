@@ -31,11 +31,11 @@
                     "produtoId": 1,
                     "produtoNome": "x-bacon",
                     "quantidade": 1,
-                    "status": 0
+                    "status": 4
                 }
             ],
             "mesaId": 1,
-            "status": 0
+            "status": 4
         }
     ],
     "produtos": [

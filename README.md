@@ -2,20 +2,19 @@
 
 ## 1. Visão Geral do Sistema
 - Nosso sistema é um sistema de gerenciamento de pedidos para restaurantes. Ele funciona via terminal e cosnegue integrar o atendimento do garçom com o cozinheiro e com a administração do restaurante. Nossa ideia inicial era que também cobrisse o caixa, mas como um dos nossos integrantes saiu do grupo de última hora, acabamos ficando sem tempo para implementar corretamente.
-- [Público-alvo / Contexto de utilização]
+- O sistema seria utilizado por restaurantes para organizar as demandas e gerenciar mesas e pedidos. Garçons utilizariam o sistema para gerenciar mesas e pedidos, cozinheiros utilizariam para gerenciar pedidos pendentes e o caixa utilizaria para fechar contas e fazer pagamentos.
 
 ## 2. Integrantes do Grupo
-- Nome - Matrícula
-- Nome - Matrícula
-- Nome - Matrícula
+- João Pedro Teixeira Cunha - 2026013610
+- Joaquim Borille Carvalho - 2026013599
 
 ## 3. Principais Funcionalidades
-- [Módulo de Autenticação e Perfis]
-- [Gestão de Mesas]
-- [Gestão de Cardápio / Produtos]
-- [Gestão de Pedidos e Itens]
-- [Módulo de Pagamentos]
-- [Histórico e Clientes]
+- Módulo de Autenticação e Perfis
+- Gestão de Mesas
+- Gestão de Cardápio / Produtos
+- Gestão de Pedidos e Itens
+- Módulo de Pagamentos
+- Histórico e Clientes
 
 ## 4. Requisitos e Modelagem
 
@@ -48,7 +47,7 @@
 - **Encapsulamento:** [Onde e como foi aplicado]
 - **Herança:** [Diagrama ou descrição da hierarquia de classes utilizada]
 - **Polimorfismo:** [Classes base, métodos virtuais e comportamento dinâmico]
-- **Modularização:** [Estrutura de pastas, separação em arquivos .hpp e .cpp]
+- **Modularização:** A estrutura de pastas é bem organizada, contendo um arquivo para cada classe. As classes interagem entre si sem problemas de inclusão de classes.
 
 ### 5.2. Programação Defensiva e Tratamento de Exceções
 - [Estratégia de sanitização e validação de entradas]
@@ -71,7 +70,18 @@ tp-pds2/
 ## 7. Instruções de Compilação e Execução
 
 ### 7.1. Pré-requisitos
-- [Compilador g++, Make, Docker, etc.]
+```Dockerfile
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    g++ \
+    cmake \
+    gdb \
+    valgrind \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Todos os pré-requisitos são instalados automaticamente durante o build do conteiner Docker, garantindo que a compilação e verificação de erros ocorra de maneira correta e padronizada independentemente da máquina do programador.
 
 ### 7.2. Executando via Docker
 ```bash
