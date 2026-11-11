@@ -35,14 +35,7 @@ bool Autenticacao::possuiPermissao(PerfilAcesso perfilNecessario) const {
         return false;
     }
 
-    PerfilAcesso perfilAtual = usuarioLogado->getPerfil();
-
-    // ADMINISTRADOR tem acesso irrestrito a qualquer operacao
-    if (perfilAtual == PerfilAcesso::ADMINISTRADOR) {
-        return true;
-    }
-
-    return perfilAtual == perfilNecessario;
+    return usuarioLogado->podeAcessar(perfilNecessario);
 }
 
 std::string Autenticacao::hashSenha(const std::string& senha) const {

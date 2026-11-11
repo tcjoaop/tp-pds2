@@ -715,17 +715,24 @@ Usuario* BancoDados::buscarUsuarioPorLogin(const std::string& login) {
 
         if (u["login"] == login) {
 
-            Usuario* usuario = new Usuario(u["id"].get<int>(),
+            PerfilAcesso perfil = static_cast<PerfilAcesso>(u["perfil"].get<int>());
+            int id = u["id"].get<int>();
+            std::string nome = u["nome"].get<std::string>();
+            std::string log = u["login"].get<std::string>();
+            std::string sen = u["senha"].get<std::string>();
 
-                                           u["nome"].get<std::string>(),
-
-                                           u["login"].get<std::string>(),
-
-                                           u["senha"].get<std::string>(),
-
-                                           static_cast<PerfilAcesso>(u["perfil"].get<int>()));
-
-            return usuario;
+            switch (perfil) {
+                case PerfilAcesso::ADMINISTRADOR:
+                    return new Administrador(id, nome, log, sen);
+                case PerfilAcesso::GARCOM:
+                    return new Garcom(id, nome, log, sen);
+                case PerfilAcesso::COZINHEIRO:
+                    return new Cozinheiro(id, nome, log, sen);
+                case PerfilAcesso::CAIXA:
+                    return new Caixa(id, nome, log, sen);
+                default:
+                    return new Usuario(id, nome, log, sen, perfil);
+            }
 
         }
 
