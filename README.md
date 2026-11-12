@@ -19,26 +19,105 @@
 ## 4. Requisitos e Modelagem
 
 ### 4.1. User Stories
-- **US01 - [Título da História]**
-  - **Descrição:** Como *[tipo de usuário]*, quero *[funcionalidade/ação]* para que *[benefício/valor]*.
-  - **Critérios de Aceitação/Validação:**
-    - Critério 1
-    - Critério 2
-- **US02 - [Título da História]**
-  - **Descrição:** ...
-  - **Critérios de Aceitação/Validação:** ...
-- **US03 - [Título da História]**
-  - ...
-- **US04 - [Título da História]**
-  - ...
-- **US05 - [Título da História]**
-  - ...
-- **US06 - [Título da História]**
-  - ...
+- **US01 -- Autentificar Usuário
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Usuário do Sistema
+Pré-condição     |   Usuário cadastrado e ativo.           
+Fluxo Principal  |   1. O usuário informa login e senha.
+                 |   2. O sistema valida as credenciais.
+                 |   3. O sistema identifica o perfil e as permissões.
+                 |   4. O sistema cria a sessão e apresenta o painel correspondente.
+Fluxo Alternativo|  Credenciais inválidas: o sistema nega o acesso e informa a falha sem revelar dados sensíveis. 
+Pós-condição     |   Usuário autenticado e identificado nas operações seguintes.
+-------------------------------------------------
+
+- **US02 -- Abrir Pedido
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Garçom / Atendente
+Pré-condição     |   Usuário autenticado; mesa/modalidade disponível.           
+Fluxo Principal  |   1. O atendente seleciona a mesa ou modalidade de atendimento.
+                 |   2. O sistema verifica disponibilidade.
+                 |   3. O atendente confirma a abertura.
+                 |   4. O sistema gera o número do pedido, registra data/hora e responsável.
+                 |   5. Quando aplicável, a mesa é marcada como ocupada.  
+Fluxo Alternativo|   Mesa indisponível: o sistema impede a abertura e exibe o motivo.
+Pós-condição     |   Pedido criado no estado ABERTO.
+-------------------------------------------------
+
+- **US03 -- Adicionar item ao Pedido
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Garçom / Atendente
+Pré-condição     |   Pedido aberto.           
+Fluxo Principal  |   1. O atendente pesquisa ou seleciona um produto.
+                 |   2. Informa quantidade e observações, se houver.
+                 |   3. O sistema valida disponibilidade e quantidade.
+                 |   4. O sistema registra preço unitário e calcula subtotal.
+                 |   5. O total parcial do pedido é atualizado.      
+Fluxo Alternativo|   Produto indisponível ou quantidade inválida: inclusão recusada.
+Pós-condição     |   Item registrado no pedido.
+-------------------------------------------------
+
+- **US04 -- Enviar itens a cozinha
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Garçom / Sistema
+Pré-condição     |   Pedido com pelo menos um item ainda não enviado.           
+Fluxo Principal  |   1. O atendente confirma o envio.
+                 |   2. O sistema registra o horário de envio dos itens. 
+                 |   3. Os itens aparecem na fila da cozinha.
+                 |   4. O status operacional passa a indicar aguardando preparo.     
+Fluxo Alternativo|   Nenhum item pendente de envio: o sistema não cria nova remessa.
+Pós-condição     |   tens disponíveis para produção.
+------------------------------------------------
+
+- **US05 -- Atualizar preparo
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Cozinha
+Pré-condição     |   Existem itens aguardando preparo.           
+Fluxo Principal  |   1. A cozinha seleciona o pedido/item.
+                 |   2. Marca como EM PREPARO.  
+                 |   3. Ao concluir, marca como PRONTO.
+                 |   4. O sistema registra usuário e horários. 
+                 |   5. O salão recebe a indicação de que o item pode ser entregue.     
+Fluxo Alternativo|   Transição inválida: o sistema rejeita a mudança.
+Pós-condição     |   Estado do item atualizado e rastreado.
+-------------------------------------------------
+
+- **US06 -- Fechar a Conta
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Garçom / Caixa
+Pré-condição     |   Pedido ativo com consumo registrado.     
+Fluxo Principal  |   1. O usuário solicita o fechamento.
+                 |   2. O sistema reúne os itens válidos e calcula subtotal. 
+                 |   3. Aplica taxa de serviço configurada.
+                 |   4. Aplica desconto quando autorizado.
+                 |   5. Exibe total final e saldo a pagar.    
+Fluxo Alternativo|   Há inconsistência ou item pendente de validação: o sistema solicita correção antes de prosseguir.
+Pós-condição     |   Conta pronta para recebimento.
+-------------------------------------------------
+
+- **US07 -- Registrar pagamento e encerrar
+Elemento        |     Descrição
+-------------------------------------------------
+Ator principal   |   Caixa
+Pré-condição     |   Conta calculada e usuário autorizado.       
+Fluxo Principal  |   1. O caixa seleciona a forma de pagamento.
+                 |   2. Informa o valor recebido. 
+                 |   3. O sistema atualiza o saldo restante.
+                 |   4. Se houver dinheiro, calcula o troco.
+                 |   5. Quando o saldo chega a zero, o sistema finaliza o pedido.
+                 |   6. A mesa é liberada quando aplicável.    
+Fluxo Alternativo|   Pagamento parcial: o pedido permanece aguardando pagamento até completar o total.
+Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
+-------------------------------------------------
 
 ### 4.2. Cartões CRC (Classes, Responsabilidades e Colaboradores)
-- [Descrição resumida ou referência ao arquivo `CRC.json`]
-- [Tabela ou listagem das principais classes, suas responsabilidades e colaborações]
+- Os cartões CRC estão detalhados de forma concisa a partir do modelo do site apresentado no ambiente do Moodle, estando no arquivo 'CRC.json', sendo convertido direto do site para essa forma. 
 
 ## 5. Arquitetura e Decisões de Projeto
 
@@ -53,8 +132,7 @@
 - **Modularização:** A estrutura de pastas é bem organizada, contendo um arquivo para cada classe. As classes interagem entre si sem problemas de inclusão de classes.
 
 ### 5.2. Programação Defensiva e Tratamento de Exceções
-- [Estratégia de sanitização e validação de entradas]
-- [Exceções utilizadas ou criadas e como são tratadas]
+
 
 ## 6. Estrutura do Repositório
 ```text
