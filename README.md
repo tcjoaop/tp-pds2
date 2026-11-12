@@ -43,10 +43,13 @@
 ## 5. Arquitetura e Decisões de Projeto
 
 ### 5.1. Conceitos de Orientação a Objetos Aplicados
-- **Abstração:** [Onde e como foi aplicada]
+- **Abstração:** Foi aplicada em todos os hpps, pois modelamos um restaurante inteiro no formato de classes com seus respectivos atributos. Por exemplo, em pedido.hpp, a classe abstrai o ciclo de um consumo de uma mesa (cálculo de subtotal, aplicação de taxa de serviço, controle de pagamentos e encerramento), fazendo com que o consumidor da classe não tenha que se preocupar com os processos e cálculos. Outro exemplo é no banco de dados, que basta chamar salvarPedido() ou buscarUsuarioPorLogin().
+
 - **Encapsulamento:** [Onde e como foi aplicado]
-- **Herança:** [Diagrama ou descrição da hierarquia de classes utilizada]
-- **Polimorfismo:** [Classes base, métodos virtuais e comportamento dinâmico]
+
+- **Herança:** Foi utilizada nas classes de usuário, sendo Usuario a classe virtual base e Administrador, Garcom, Cozinheiro e Caixa as subclasses filhas.
+
+- **Polimorfismo:** Como utilizamos herança nas classes de usuário, utilizamos polimorfismo na autenticação do usuário. Ao chamar a função Autenticacao::possuiPermissao(PerfilAcesso perfilNecessario), utilizamos o ponteiro do usuário logado para chamar a função possuiAcesso(perfilNecessario), que já retorna true ou false com base no tipo de usuário. Como a função possuiAcesso() está na classe virtual, é garantido que todas as classes vão fazer overide nessa função e implementar as próprias permissões. Com isso, podemos adicionar uma nova classe com novas permissões muito mais facilmente.
 - **Modularização:** A estrutura de pastas é bem organizada, contendo um arquivo para cada classe. As classes interagem entre si sem problemas de inclusão de classes.
 
 ### 5.2. Programação Defensiva e Tratamento de Exceções
