@@ -1,0 +1,18 @@
+# Configuração Doxygen — sistema de restaurante (C++).
+PROJECT_NAME           = "TP PDS2 - Sistema de Restaurante"
+PROJECT_BRIEF          = "Documentação de classes, métodos e tipos"
+OUTPUT_DIRECTORY       = docs-gerados
+INPUT                  = documentation src README.md
+FILE_PATTERNS          = *.hpp *.cpp *.md
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */json.hpp */doctest.h */obj/* */bin/*
+USE_MDFILE_AS_MAINPAGE = README.md
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+OUTPUT_LANGUAGE        = Brazilian
