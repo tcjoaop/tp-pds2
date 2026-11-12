@@ -117,8 +117,7 @@ Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
 -------------------------------------------------
 
 ### 4.2. Cartões CRC (Classes, Responsabilidades e Colaboradores)
-- [Descrição resumida ou referência ao arquivo `CRC.json`]
-- [Tabela ou listagem das principais classes, suas responsabilidades e colaborações]
+- Os cartões CRC estão detalhados de forma concisa a partir do modelo do site apresentado no ambiente do Moodle, estando no arquivo 'CRC.json', sendo convertido direto do site para essa forma. 
 
 ## 5. Arquitetura e Decisões de Projeto
 
