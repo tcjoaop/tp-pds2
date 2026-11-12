@@ -5,7 +5,6 @@
 
 // Funcoes auxiliares de sanitizacao de entrada
 static void limparBufferEntrada() {
-    std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
@@ -13,11 +12,16 @@ static int lerInteiroSanitizado(const std::string& prompt) {
     int valor;
     while (true) {
         std::cout << prompt;
-        if (std::cin >> valor) {
+        std::cin >> valor;
+        if (!std::cin.fail()) {
             limparBufferEntrada();
             return valor;
         }
+        if (std::cin.eof()) {
+            throw std::ios_base::failure("Entrada encerrada.");
+        }
         std::cout << "[ERRO] Entrada invalida! Digite apenas numeros inteiros." << std::endl;
+        std::cin.clear();
         limparBufferEntrada();
     }
 }
@@ -26,13 +30,49 @@ static double lerDoubleSanitizado(const std::string& prompt) {
     double valor;
     while (true) {
         std::cout << prompt;
-        if (std::cin >> valor) {
+        std::cin >> valor;
+        if (!std::cin.fail()) {
             limparBufferEntrada();
             return valor;
         }
+        if (std::cin.eof()) {
+            throw std::ios_base::failure("Entrada encerrada.");
+        }
         std::cout << "[ERRO] Entrada invalida! Digite um valor numerico valido." << std::endl;
+        std::cin.clear();
         limparBufferEntrada();
     }
+}
+
+static std::string lerTextoSanitizado(const std::string& prompt) {
+    std::string valor;
+    while (true) {
+        std::cout << prompt;
+        std::cin >> valor;
+        if (!std::cin.fail()) {
+            limparBufferEntrada();
+            return valor;
+        }
+        if (std::cin.eof()) {
+            throw std::ios_base::failure("Entrada encerrada.");
+        }
+        std::cout << "[ERRO] Entrada invalida. Tente novamente." << std::endl;
+        std::cin.clear();
+        limparBufferEntrada();
+    }
+}
+
+static std::string lerLinhaSanitizada(const std::string& prompt) {
+    std::string valor;
+    std::cout << prompt;
+    if (!std::getline(std::cin, valor)) {
+        throw std::ios_base::failure("Entrada encerrada.");
+    }
+    return valor;
+}
+
+static char lerCaractereSanitizado(const std::string& prompt) {
+    return lerTextoSanitizado(prompt).front();
 }
 
 SistemaRestaurante::SistemaRestaurante(const std::string& caminhoBancoDados)
@@ -47,20 +87,27 @@ bool SistemaRestaurante::inicializar() {
 }
 
 void SistemaRestaurante::executar() {
-    if (!autenticacao.estaLogado()) {
-        exibirTelaLogin();
-    } else {
-        exibirTelaPrincipal();
+    try {
+        if (!autenticacao.estaLogado()) {
+            exibirTelaLogin();
+        } else {
+            exibirTelaPrincipal();
+        }
+    } catch (const std::ios_base::failure&) {
+        std::cout << "\nEntrada encerrada. Finalizando o sistema." << std::endl;
+        autenticacao.logout();
+        bancoDados.desconectar();
+    } catch (const std::exception& e) {
+        std::cerr << "\n[ERRO DO SISTEMA] " << e.what() << std::endl;
+        bancoDados.desconectar();
     }
 }
 
 void SistemaRestaurante::exibirTelaLogin() {
     std::string login, senha;
     std::cout << "=== TELA DE LOGIN ===" << std::endl;
-    std::cout << "Login: ";
-    std::cin >> login;
-    std::cout << "Senha: ";
-    std::cin >> senha;
+    login = lerTextoSanitizado("Login: ");
+    senha = lerTextoSanitizado("Senha: ");
     if (autenticacao.login(login, senha)) {
         std::cout << "Login bem-sucedido!" << std::endl;
         exibirTelaPrincipal();
@@ -116,6 +163,8 @@ void SistemaRestaurante::exibirTelaPrincipal() {
                 std::cout << "Opcao invalida." << std::endl;
                 break;
         }
+    } catch (const std::ios_base::failure&) {
+        throw;
     } catch (const std::invalid_argument& e) {
         std::cout << "\n[ERRO DE VALIDACAO] " << e.what() << std::endl;
     } catch (const std::exception& e) {
@@ -144,13 +193,7 @@ void SistemaRestaurante::moduloMesas() {
         std::cout << "0. Voltar ao menu principal" << std::endl;
         std::cout << "Escolha uma opcao: ";
         
-        if (!(std::cin >> opcao)) {
-            std::cin.clear();
-            std::string descarte;
-            std::cin >> descarte;
-            std::cout << "Entrada invalida. Digite um numero." << std::endl;
-            continue;
-        }
+        opcao = lerInteiroSanitizado("");
 
         switch (opcao) {
             case 1: {
@@ -180,7 +223,7 @@ void SistemaRestaurante::moduloMesas() {
             case 2: {
                 int idMesa;
                 std::cout << "Digite o ID da mesa que deseja ocupar: ";
-                std::cin >> idMesa;
+                idMesa = lerInteiroSanitizado("");
 
                 Mesa* mesa = bancoDados.buscarMesaPorId(idMesa);
                 if (mesa == nullptr) {
@@ -203,7 +246,7 @@ void SistemaRestaurante::moduloMesas() {
             case 3: {
                 int idMesa;
                 std::cout << "Digite o ID da mesa que deseja liberar: ";
-                std::cin >> idMesa;
+                idMesa = lerInteiroSanitizado("");
 
                 Mesa* mesa = bancoDados.buscarMesaPorId(idMesa);
                 if (mesa == nullptr) {
@@ -226,7 +269,7 @@ void SistemaRestaurante::moduloMesas() {
             case 4: {
                 int idMesa;
                 std::cout << "Digite o ID da mesa que deseja reservar: ";
-                std::cin >> idMesa;
+                idMesa = lerInteiroSanitizado("");
 
                 Mesa* mesa = bancoDados.buscarMesaPorId(idMesa);
                 if (mesa == nullptr) {
@@ -251,13 +294,7 @@ void SistemaRestaurante::moduloMesas() {
                 int idMesa, numeroMesa, capacidadeMesa;
 
                 std::cout << "Digite o ID da nova mesa: ";
-                if (!(std::cin >> idMesa)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID invalido." << std::endl;
-                    break;
-                }
+                idMesa = lerInteiroSanitizado("");
 
                 // Verifica se o ID ja existe
                 Mesa* existente = bancoDados.buscarMesaPorId(idMesa);
@@ -268,19 +305,11 @@ void SistemaRestaurante::moduloMesas() {
                 }
 
                 std::cout << "Digite o numero da mesa: ";
-                if (!(std::cin >> numeroMesa)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] Numero invalido." << std::endl;
-                    break;
-                }
+                numeroMesa = lerInteiroSanitizado("");
 
                 std::cout << "Digite a capacidade da mesa (lugares): ";
-                if (!(std::cin >> capacidadeMesa) || capacidadeMesa <= 0) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
+                capacidadeMesa = lerInteiroSanitizado("");
+                if (capacidadeMesa <= 0) {
                     std::cout << "[ERRO] Capacidade deve ser maior que 0." << std::endl;
                     break;
                 }
@@ -326,13 +355,7 @@ void SistemaRestaurante::moduloPedidos() {
         std::cout << "0. Voltar ao menu principal" << std::endl;
         std::cout << "Escolha uma opcao: ";
 
-        if (!(std::cin >> opcao)) {
-            std::cin.clear();
-            std::string d;
-            std::cin >> d;
-            std::cout << "Entrada invalida. Digite um numero." << std::endl;
-            continue;
-        }
+        opcao = lerInteiroSanitizado("");
 
         switch (opcao) {
             case 1: {
@@ -371,13 +394,7 @@ void SistemaRestaurante::moduloPedidos() {
                 int idPedido, idMesa;
 
                 std::cout << "Digite o ID para o novo pedido: ";
-                if (!(std::cin >> idPedido)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID invalido." << std::endl;
-                    break;
-                }
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* existente = bancoDados.buscarPedidoPorId(idPedido);
                 if (existente != nullptr) {
@@ -387,13 +404,7 @@ void SistemaRestaurante::moduloPedidos() {
                 }
 
                 std::cout << "Digite o ID da mesa: ";
-                if (!(std::cin >> idMesa)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID de mesa invalido." << std::endl;
-                    break;
-                }
+                idMesa = lerInteiroSanitizado("");
 
                 Mesa* mesa = bancoDados.buscarMesaPorId(idMesa);
                 if (mesa == nullptr) {
@@ -422,7 +433,7 @@ void SistemaRestaurante::moduloPedidos() {
                 std::cout << "\n--- ADICIONAR ITEM AO PEDIDO ---" << std::endl;
                 int idPedido;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -456,7 +467,7 @@ void SistemaRestaurante::moduloPedidos() {
 
                 int idProduto, quantidade;
                 std::cout << "Digite o ID do produto desejado: ";
-                std::cin >> idProduto;
+                idProduto = lerInteiroSanitizado("");
 
                 Produto* produtoEscolhido = bancoDados.buscarProdutoPorId(idProduto);
                 if (produtoEscolhido == nullptr) {
@@ -466,17 +477,16 @@ void SistemaRestaurante::moduloPedidos() {
                 }
 
                 std::cout << "Digite a quantidade: ";
-                if (!(std::cin >> quantidade) || quantidade <= 0) {
+                quantidade = lerInteiroSanitizado("");
+                if (quantidade <= 0) {
                     std::cout << "[ERRO] Quantidade deve ser maior que 0." << std::endl;
                     delete produtoEscolhido;
                     delete pedido;
                     break;
                 }
 
-                std::cin.ignore();
                 std::string obs;
-                std::cout << "Observacoes (ex: sem cebola) [Pressione ENTER para nenhuma]: ";
-                std::getline(std::cin, obs);
+                obs = lerLinhaSanitizada("Observacoes (ex: sem cebola) [Pressione ENTER para nenhuma]: ");
 
                 int proximoItemId = static_cast<int>(pedido->getItens().size()) + 1;
                 ItemPedido novoItem(proximoItemId, *produtoEscolhido, quantidade, produtoEscolhido->getPreco(), obs);
@@ -497,7 +507,7 @@ void SistemaRestaurante::moduloPedidos() {
             case 4: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -552,7 +562,7 @@ void SistemaRestaurante::moduloPedidos() {
             case 5: {
                 int idPedido, idItem;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -561,7 +571,7 @@ void SistemaRestaurante::moduloPedidos() {
                 }
 
                 std::cout << "Digite o ID do item a cancelar: ";
-                std::cin >> idItem;
+                idItem = lerInteiroSanitizado("");
 
                 ItemPedido* item = pedido->buscarItem(idItem);
                 if (item == nullptr) {
@@ -579,7 +589,7 @@ void SistemaRestaurante::moduloPedidos() {
             case 6: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido que deseja cancelar: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -589,7 +599,7 @@ void SistemaRestaurante::moduloPedidos() {
 
                 char confirma;
                 std::cout << "Tem certeza que deseja cancelar o pedido #" << idPedido << "? (s/n): ";
-                std::cin >> confirma;
+                confirma = lerCaractereSanitizado("");
 
                 if (confirma == 's' || confirma == 'S') {
                     pedido->cancelar();
@@ -633,13 +643,7 @@ void SistemaRestaurante::moduloCozinha() {
         std::cout << "0. Voltar ao menu principal" << std::endl;
         std::cout << "Escolha uma opcao: ";
 
-        if (!(std::cin >> opcao)) {
-            std::cin.clear();
-            std::string d;
-            std::cin >> d;
-            std::cout << "Entrada invalida. Digite um numero." << std::endl;
-            continue;
-        }
+        opcao = lerInteiroSanitizado("");
 
         switch (opcao) {
             case 1: {
@@ -687,7 +691,7 @@ void SistemaRestaurante::moduloCozinha() {
                 std::cout << "\n--- INICIAR PREPARO DE ITEM ---" << std::endl;
                 int idPedido, idItem;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -696,7 +700,7 @@ void SistemaRestaurante::moduloCozinha() {
                 }
 
                 std::cout << "Digite o ID do item a preparar: ";
-                std::cin >> idItem;
+                idItem = lerInteiroSanitizado("");
 
                 ItemPedido* item = pedido->buscarItem(idItem);
                 if (item == nullptr) {
@@ -724,7 +728,7 @@ void SistemaRestaurante::moduloCozinha() {
                 std::cout << "\n--- MARCAR ITEM COMO PRONTO ---" << std::endl;
                 int idPedido, idItem;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -733,7 +737,7 @@ void SistemaRestaurante::moduloCozinha() {
                 }
 
                 std::cout << "Digite o ID do item pronto: ";
-                std::cin >> idItem;
+                idItem = lerInteiroSanitizado("");
 
                 ItemPedido* item = pedido->buscarItem(idItem);
                 if (item == nullptr) {
@@ -773,7 +777,7 @@ void SistemaRestaurante::moduloCozinha() {
                 std::cout << "\n--- MARCAR ITEM COMO ENTREGUE ---" << std::endl;
                 int idPedido, idItem;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -782,7 +786,7 @@ void SistemaRestaurante::moduloCozinha() {
                 }
 
                 std::cout << "Digite o ID do item entregue a mesa: ";
-                std::cin >> idItem;
+                idItem = lerInteiroSanitizado("");
 
                 ItemPedido* item = pedido->buscarItem(idItem);
                 if (item == nullptr) {
@@ -844,13 +848,7 @@ void SistemaRestaurante::moduloCaixa() {
         std::cout << "0. Voltar ao menu principal" << std::endl;
         std::cout << "Escolha uma opcao: ";
 
-        if (!(std::cin >> opcao)) {
-            std::cin.clear();
-            std::string d;
-            std::cin >> d;
-            std::cout << "Entrada invalida. Digite um numero." << std::endl;
-            continue;
-        }
+        opcao = lerInteiroSanitizado("");
 
         switch (opcao) {
             case 1: {
@@ -878,7 +876,7 @@ void SistemaRestaurante::moduloCaixa() {
             case 2: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -932,7 +930,7 @@ void SistemaRestaurante::moduloCaixa() {
             case 3: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -944,19 +942,19 @@ void SistemaRestaurante::moduloCaixa() {
                 std::cout << "1. Definir percentual de taxa de servico\n"
                           << "2. Conceder desconto em valor\n"
                           << "Escolha: ";
-                std::cin >> escolha;
+                escolha = lerInteiroSanitizado("");
 
                 if (escolha == 1) {
                     double taxa;
                     std::cout << "Digite o percentual da taxa (ex: 10 para 10%): ";
-                    std::cin >> taxa;
+                    taxa = lerDoubleSanitizado("");
                     pedido->setTaxaServicoPercentual(taxa);
                     std::cout << "[SUCESSO] Taxa de " << taxa << "% aplicada. Novo total: R$ "
                               << pedido->calcularTotalComTaxa() << std::endl;
                 } else if (escolha == 2) {
                     double desc;
                     std::cout << "Digite o valor do desconto (R$): ";
-                    std::cin >> desc;
+                    desc = lerDoubleSanitizado("");
                     pedido->setDesconto(desc);
                     std::cout << "[SUCESSO] Desconto de R$ " << desc << " aplicado. Novo total: R$ "
                               << pedido->calcularTotalComTaxa() << std::endl;
@@ -969,7 +967,7 @@ void SistemaRestaurante::moduloCaixa() {
             case 4: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido a pagar: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -992,7 +990,7 @@ void SistemaRestaurante::moduloCaixa() {
                           << "3. PIX\n"
                           << "Opcao: ";
                 int opcForma;
-                std::cin >> opcForma;
+                opcForma = lerInteiroSanitizado("");
 
                 FormaPagamento forma;
                 switch (opcForma) {
@@ -1008,7 +1006,7 @@ void SistemaRestaurante::moduloCaixa() {
 
                 double valorRecebido;
                 std::cout << "Digite o valor a pagar (R$): ";
-                std::cin >> valorRecebido;
+                valorRecebido = lerDoubleSanitizado("");
 
                 if (valorRecebido <= 0.0) {
                     std::cout << "[ERRO] Valor invalido." << std::endl;
@@ -1037,7 +1035,7 @@ void SistemaRestaurante::moduloCaixa() {
             case 5: {
                 int idPedido;
                 std::cout << "Digite o ID do pedido para fechar e liberar a mesa: ";
-                std::cin >> idPedido;
+                idPedido = lerInteiroSanitizado("");
 
                 Pedido* pedido = bancoDados.buscarPedidoPorId(idPedido);
                 if (pedido == nullptr) {
@@ -1097,13 +1095,7 @@ void SistemaRestaurante::moduloCadastros() {
         std::cout << "0. Voltar ao menu principal" << std::endl;
         std::cout << "Escolha uma opcao: ";
 
-        if (!(std::cin >> opcao)) {
-            std::cin.clear();
-            std::string d;
-            std::cin >> d;
-            std::cout << "Entrada invalida. Digite um numero." << std::endl;
-            continue;
-        }
+        opcao = lerInteiroSanitizado("");
 
         switch (opcao) {
             case 1: {
@@ -1112,13 +1104,7 @@ void SistemaRestaurante::moduloCadastros() {
                 std::string nome;
 
                 std::cout << "Digite o ID do produto: ";
-                if (!(std::cin >> id)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID invalido." << std::endl;
-                    break;
-                }
+                id = lerInteiroSanitizado("");
 
                 Produto* existente = bancoDados.buscarProdutoPorId(id);
                 if (existente != nullptr) {
@@ -1127,24 +1113,18 @@ void SistemaRestaurante::moduloCadastros() {
                     break;
                 }
 
-                std::cin.ignore();
-                std::cout << "Digite o nome do produto: ";
-                std::getline(std::cin, nome);
+                nome = lerLinhaSanitizada("Digite o nome do produto: ");
 
                 std::cout << "Digite o preco (inteiro em R$): ";
-                if (!(std::cin >> preco) || preco < 0) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
+                preco = lerInteiroSanitizado("");
+                if (preco < 0) {
                     std::cout << "[ERRO] Preco invalido." << std::endl;
                     break;
                 }
 
                 std::cout << "Digite o tempo estimado de preparo (em minutos): ";
-                if (!(std::cin >> tempoPreparo) || tempoPreparo < 0) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
+                tempoPreparo = lerInteiroSanitizado("");
+                if (tempoPreparo < 0) {
                     std::cout << "[ERRO] Tempo de preparo invalido." << std::endl;
                     break;
                 }
@@ -1177,7 +1157,7 @@ void SistemaRestaurante::moduloCadastros() {
             case 3: {
                 int id;
                 std::cout << "Digite o ID do produto para alternar disponibilidade: ";
-                std::cin >> id;
+                id = lerInteiroSanitizado("");
 
                 Produto* prod = bancoDados.buscarProdutoPorId(id);
                 if (prod == nullptr) {
@@ -1200,13 +1180,7 @@ void SistemaRestaurante::moduloCadastros() {
                 int idMesa, numeroMesa, capacidadeMesa;
 
                 std::cout << "Digite o ID da nova mesa: ";
-                if (!(std::cin >> idMesa)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID invalido." << std::endl;
-                    break;
-                }
+                idMesa = lerInteiroSanitizado("");
 
                 Mesa* existente = bancoDados.buscarMesaPorId(idMesa);
                 if (existente != nullptr) {
@@ -1216,19 +1190,11 @@ void SistemaRestaurante::moduloCadastros() {
                 }
 
                 std::cout << "Digite o numero da mesa: ";
-                if (!(std::cin >> numeroMesa)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] Numero invalido." << std::endl;
-                    break;
-                }
+                numeroMesa = lerInteiroSanitizado("");
 
                 std::cout << "Digite a capacidade da mesa (lugares): ";
-                if (!(std::cin >> capacidadeMesa) || capacidadeMesa <= 0) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
+                capacidadeMesa = lerInteiroSanitizado("");
+                if (capacidadeMesa <= 0) {
                     std::cout << "[ERRO] Capacidade invalida." << std::endl;
                     break;
                 }
@@ -1247,20 +1213,11 @@ void SistemaRestaurante::moduloCadastros() {
                 std::string nome, login, senha;
 
                 std::cout << "Digite o ID do usuario: ";
-                if (!(std::cin >> id)) {
-                    std::cin.clear();
-                    std::string d;
-                    std::cin >> d;
-                    std::cout << "[ERRO] ID invalido." << std::endl;
-                    break;
-                }
+                id = lerInteiroSanitizado("");
 
-                std::cin.ignore();
-                std::cout << "Digite o nome completo: ";
-                std::getline(std::cin, nome);
+                nome = lerLinhaSanitizada("Digite o nome completo: ");
 
-                std::cout << "Digite o login: ";
-                std::cin >> login;
+                login = lerTextoSanitizado("Digite o login: ");
 
                 Usuario* existente = bancoDados.buscarUsuarioPorLogin(login);
                 if (existente != nullptr) {
@@ -1269,8 +1226,7 @@ void SistemaRestaurante::moduloCadastros() {
                     break;
                 }
 
-                std::cout << "Digite a senha: ";
-                std::cin >> senha;
+                senha = lerTextoSanitizado("Digite a senha: ");
 
                 std::cout << "Escolha o Perfil de Acesso:\n"
                           << "0. ADMINISTRADOR\n"
@@ -1278,7 +1234,7 @@ void SistemaRestaurante::moduloCadastros() {
                           << "2. GARCOM\n"
                           << "3. COZINHEIRO\n"
                           << "Perfil: ";
-                std::cin >> opcaoPerfil;
+                opcaoPerfil = lerInteiroSanitizado("");
 
                 PerfilAcesso perfil;
                 switch (opcaoPerfil) {

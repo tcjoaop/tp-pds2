@@ -129,8 +129,7 @@ Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
 - **Modularização:** A estrutura de pastas é bem organizada, contendo um arquivo para cada classe. As classes interagem entre si sem problemas de inclusão de classes.
 
 ### 5.2. Programação Defensiva e Tratamento de Exceções
-- [Estratégia de sanitização e validação de entradas]
-- [Exceções utilizadas ou criadas e como são tratadas]
+
 
 ## 6. Estrutura do Repositório
 ```text
