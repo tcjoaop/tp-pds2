@@ -217,3 +217,5 @@ Para ver o relatório, basta rodar o comando acima. Na raiz do nosso projeto há
 - **Métodos e funções:** `nomeDoMetodo()` (lowerCamelCase)
 - **Atributos e variáveis:** `nome_atributo` (snake_case)
 - **Constantes:** `NOME_CONSTANTE` (SCREAMING_SNAKE_CASE)
+
+###Login: admin Senha: admin123
