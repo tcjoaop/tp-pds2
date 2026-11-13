@@ -1,4 +1,4 @@
-# Nome do Projeto / Sistema de Gestão de Restaurante
+# Sistema de Gestão de Restaurante - TP PDS 2 2026/2 UFMG
 
 ## 1. Visão Geral do Sistema
 - Nosso sistema é um sistema de gerenciamento de pedidos para restaurantes. Ele funciona via terminal e cosnegue integrar o atendimento do garçom com o cozinheiro e com a administração do restaurante. Nossa ideia inicial era que também cobrisse o caixa, mas como um dos nossos integrantes saiu do grupo de última hora, acabamos ficando sem tempo para implementar corretamente.
@@ -124,15 +124,26 @@ Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
 ### 5.1. Conceitos de Orientação a Objetos Aplicados
 - **Abstração:** Foi aplicada em todos os hpps, pois modelamos um restaurante inteiro no formato de classes com seus respectivos atributos. Por exemplo, em pedido.hpp, a classe abstrai o ciclo de um consumo de uma mesa (cálculo de subtotal, aplicação de taxa de serviço, controle de pagamentos e encerramento), fazendo com que o consumidor da classe não tenha que se preocupar com os processos e cálculos. Outro exemplo é no banco de dados, que basta chamar salvarPedido() ou buscarUsuarioPorLogin().
 
-- **Encapsulamento:** [Onde e como foi aplicado]
+- **Encapsulamento:** 100% dos atributos das classes do domínio (Mesa, Pedido, ItemPedido, Produto, Usuario, Cliente, Pagamento) são privados, com exceção dos atributos protected da classe Usuario. Encapsular esses atributos é fundamental para não ter como alterá-los sem ser por meio de funções internas da classe. No nosso caso, utilizamos getters e setters para fazer isso. Outro ponto positivo é que essa decisão torna mais fácil verificar condições (como o método ocuparmesa() não poder ocupar uma mesa já ocupada) sem precisar fazer essas alterações em todas as partes do código em que precisamos utilizar as funções. 
 
 - **Herança:** Foi utilizada nas classes de usuário, sendo Usuario a classe virtual base e Administrador, Garcom, Cozinheiro e Caixa as subclasses filhas.
 
 - **Polimorfismo:** Como utilizamos herança nas classes de usuário, utilizamos polimorfismo na autenticação do usuário. Ao chamar a função Autenticacao::possuiPermissao(PerfilAcesso perfilNecessario), utilizamos o ponteiro do usuário logado para chamar a função possuiAcesso(perfilNecessario), que já retorna true ou false com base no tipo de usuário. Como a função possuiAcesso() está na classe virtual, é garantido que todas as classes vão fazer overide nessa função e implementar as próprias permissões. Com isso, podemos adicionar uma nova classe com novas permissões muito mais facilmente.
+
 - **Modularização:** A estrutura de pastas é bem organizada, contendo um arquivo para cada classe. As classes interagem entre si sem problemas de inclusão de classes.
 
 ### 5.2. Programação Defensiva e Tratamento de Exceções
 
+Sempre que um dado inválido é inserido, lançamos a exceção std::invalid_argument. Essa exceção nos permite proporcionar uma melhor experiência para o usuário ao continuar rodando o código mesmo após uma entrada inválida (que pode ser um erro de digitação ou confusão). Alguns casos que utilizam isso são:
+- Em Produto: IDs 0, nomes vazios, preços negativos ou tempos de preparo negativos.
+- Em Mesa: capacidade 0 ou número de mesa negativo.
+- Em ItemPedido: quantidade 0 ou preços unitários negativos.
+- Em Pedido: taxas de serviço ou descontos com valores negativos.
+- Em Cliente: nomes vazios e IDs negativos.
+
+No sistema do restaurante, utilizamos as funções imparBufferEntrada(), lerInteiroSanitizado(), lerDoubleSanitizado(), lerTextoSanitizado(), lerLinhaSanitizada() e lerCaractereSanitizado() para limpar potenciais entradas indesejadas.
+
+Nessas funções, implementamos std::cin.clear() para limpar o erro que acontece quando o usuário digita algo que não estava sendo esperado. Após isso, chamamos std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'), que descarta tudo que o usuário tiver digitado no terminal.
 
 ## 6. Estrutura do Repositório
 ```text
@@ -185,14 +196,20 @@ make test
 ```
 
 ### 8.2. Verificação de Cobertura de Código
-- [Comando para gerar relatório de cobertura (gcov/lcov)]
-- [Resumo da cobertura atual]
+Utilizamos o framework Doctest, como recomendado nas aulas, para organizar nossos testes de integração e testes de unidade. Atualmente obtemos os resultados: 21 Casos de Teste (Test Cases) e 120 Asserções (Assertions), com 100% de sucesso.
 
-## 9. Documentação da API (Doxygen)
-- [Instruções para gerar a documentação Doxygen]
+Ao executar o comando 'make test', uma função main alternativa é compilada ao invés da main original do sistema. Essa main está na pasta 'tests' e roda automaticamente todos os testes que estão programados nos outros arquivos.
+
+Nossos testes cobrem os resultados esperados das funções, testes de extremos e também testes de exceções, garantindo que pudéssemos desenvolver o código com segurança e identificar falhas rapidamente.
+
+## 9. Documentação (Doxygen)
 ```bash
 doxygen Doxyfile
 ```
+
+Utilizamos o Doxygen, como recomendado na descrição do trabalho, para documentação do código. Ao longo do projeto, comentários contém tags específicas que são lidas pelo Doxygen, gerando um arquivo html que pode ser aberto no navegador.
+
+Para ver o relatório, basta rodar o comando acima. Na raiz do nosso projeto há um arquivo Doxyfile configurado para português brasileiro. Os documentos são gerados na pasta docs-gerados/html/.
 
 ## 10. Padronização de Código (Code Style)
 - **Nomes de arquivos:** `nome_de_arquivo.extensao`
