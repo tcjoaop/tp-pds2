@@ -2,7 +2,7 @@
 PROJECT_NAME           = "TP PDS2 - Sistema de Restaurante"
 PROJECT_BRIEF          = "Documentação de classes, métodos e tipos"
 OUTPUT_DIRECTORY       = docs-gerados
-INPUT                  = documentation src README.md
+INPUT                  = Documentation src README.md
 FILE_PATTERNS          = *.hpp *.cpp *.md
 RECURSIVE              = YES
 EXCLUDE_PATTERNS       = */json.hpp */doctest.h */obj/* */bin/*
