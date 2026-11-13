@@ -10,13 +10,13 @@
             "capacidade": 2,
             "id": 2,
             "numero": 2,
-            "status": 0
+            "status": 2
         },
         {
             "capacidade": 6,
             "id": 3,
             "numero": 3,
-            "status": 0
+            "status": 1
         }
     ],
     "pedidos": [

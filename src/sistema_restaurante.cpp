@@ -309,19 +309,19 @@ void SistemaRestaurante::moduloMesas() {
 
                 std::cout << "Digite a capacidade da mesa (lugares): ";
                 capacidadeMesa = lerInteiroSanitizado("");
-                if (capacidadeMesa <= 0) {
-                    std::cout << "[ERRO] Capacidade deve ser maior que 0." << std::endl;
-                    break;
-                }
 
-                // Cria a nova mesa com status inicial LIVRE
-                Mesa novaMesa(idMesa, numeroMesa, capacidadeMesa, StatusMesa::LIVRE);
+                try {
+                    // Cria a nova mesa com status inicial LIVRE
+                    Mesa novaMesa(idMesa, numeroMesa, capacidadeMesa, StatusMesa::LIVRE);
 
-                if (bancoDados.salvarMesa(novaMesa)) {
-                    std::cout << "[SUCESSO] Mesa numero " << numeroMesa << " (ID " << idMesa 
-                              << ") cadastrada com sucesso!" << std::endl;
-                } else {
-                    std::cout << "[ERRO] Falha ao salvar a nova mesa no banco de dados." << std::endl;
+                    if (bancoDados.salvarMesa(novaMesa)) {
+                        std::cout << "[SUCESSO] Mesa numero " << numeroMesa << " (ID " << idMesa 
+                                  << ") cadastrada com sucesso!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao salvar a nova mesa no banco de dados." << std::endl;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "[ERRO DE VALIDACAO] " << e.what() << std::endl;
                 }
                 break;
             }
@@ -478,26 +478,24 @@ void SistemaRestaurante::moduloPedidos() {
 
                 std::cout << "Digite a quantidade: ";
                 quantidade = lerInteiroSanitizado("");
-                if (quantidade <= 0) {
-                    std::cout << "[ERRO] Quantidade deve ser maior que 0." << std::endl;
-                    delete produtoEscolhido;
-                    delete pedido;
-                    break;
-                }
 
                 std::string obs;
                 obs = lerLinhaSanitizada("Observacoes (ex: sem cebola) [Pressione ENTER para nenhuma]: ");
 
                 int proximoItemId = static_cast<int>(pedido->getItens().size()) + 1;
-                ItemPedido novoItem(proximoItemId, *produtoEscolhido, quantidade, produtoEscolhido->getPreco(), obs);
+                try {
+                    ItemPedido novoItem(proximoItemId, *produtoEscolhido, quantidade, produtoEscolhido->getPreco(), obs);
 
-                pedido->adicionarItem(novoItem);
+                    pedido->adicionarItem(novoItem);
 
-                if (bancoDados.salvarPedido(*pedido)) {
-                    std::cout << "[SUCESSO] Item '" << produtoEscolhido->getNome() 
-                              << "' (x" << quantidade << ") adicionado ao pedido!" << std::endl;
-                } else {
-                    std::cout << "[ERRO] Falha ao atualizar o pedido no banco de dados." << std::endl;
+                    if (bancoDados.salvarPedido(*pedido)) {
+                        std::cout << "[SUCESSO] Item '" << produtoEscolhido->getNome() 
+                                  << "' (x" << quantidade << ") adicionado ao pedido!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao atualizar o pedido no banco de dados." << std::endl;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "[ERRO DE VALIDACAO] " << e.what() << std::endl;
                 }
 
                 delete produtoEscolhido;
@@ -1117,23 +1115,19 @@ void SistemaRestaurante::moduloCadastros() {
 
                 std::cout << "Digite o preco (inteiro em R$): ";
                 preco = lerInteiroSanitizado("");
-                if (preco < 0) {
-                    std::cout << "[ERRO] Preco invalido." << std::endl;
-                    break;
-                }
 
                 std::cout << "Digite o tempo estimado de preparo (em minutos): ";
                 tempoPreparo = lerInteiroSanitizado("");
-                if (tempoPreparo < 0) {
-                    std::cout << "[ERRO] Tempo de preparo invalido." << std::endl;
-                    break;
-                }
 
-                Produto novoProduto(id, nome, preco, true, tempoPreparo);
-                if (bancoDados.salvarProduto(novoProduto)) {
-                    std::cout << "[SUCESSO] Produto '" << nome << "' cadastrado com sucesso!" << std::endl;
-                } else {
-                    std::cout << "[ERRO] Falha ao salvar produto no banco de dados." << std::endl;
+                try {
+                    Produto novoProduto(id, nome, preco, true, tempoPreparo);
+                    if (bancoDados.salvarProduto(novoProduto)) {
+                        std::cout << "[SUCESSO] Produto '" << nome << "' cadastrado com sucesso!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao salvar produto no banco de dados." << std::endl;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "[ERRO DE VALIDACAO] " << e.what() << std::endl;
                 }
                 break;
             }
@@ -1194,16 +1188,16 @@ void SistemaRestaurante::moduloCadastros() {
 
                 std::cout << "Digite a capacidade da mesa (lugares): ";
                 capacidadeMesa = lerInteiroSanitizado("");
-                if (capacidadeMesa <= 0) {
-                    std::cout << "[ERRO] Capacidade invalida." << std::endl;
-                    break;
-                }
 
-                Mesa novaMesa(idMesa, numeroMesa, capacidadeMesa, StatusMesa::LIVRE);
-                if (bancoDados.salvarMesa(novaMesa)) {
-                    std::cout << "[SUCESSO] Mesa " << numeroMesa << " cadastrada com sucesso!" << std::endl;
-                } else {
-                    std::cout << "[ERRO] Falha ao salvar mesa." << std::endl;
+                try {
+                    Mesa novaMesa(idMesa, numeroMesa, capacidadeMesa, StatusMesa::LIVRE);
+                    if (bancoDados.salvarMesa(novaMesa)) {
+                        std::cout << "[SUCESSO] Mesa " << numeroMesa << " cadastrada com sucesso!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao salvar mesa." << std::endl;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "[ERRO DE VALIDACAO] " << e.what() << std::endl;
                 }
                 break;
             }
@@ -1251,11 +1245,15 @@ void SistemaRestaurante::moduloCadastros() {
                 std::hash<std::string> hasher;
                 std::string senhaHash = std::to_string(hasher(senha));
 
-                Usuario novoUsuario(id, nome, login, senhaHash, perfil);
-                if (bancoDados.salvarUsuario(novoUsuario)) {
-                    std::cout << "[SUCESSO] Usuario '" << login << "' cadastrado com sucesso!" << std::endl;
-                } else {
-                    std::cout << "[ERRO] Falha ao salvar usuario no banco de dados." << std::endl;
+                try {
+                    Usuario novoUsuario(id, nome, login, senhaHash, perfil);
+                    if (bancoDados.salvarUsuario(novoUsuario)) {
+                        std::cout << "[SUCESSO] Usuario '" << login << "' cadastrado com sucesso!" << std::endl;
+                    } else {
+                        std::cout << "[ERRO] Falha ao salvar usuario no banco de dados." << std::endl;
+                    }
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "[ERRO DE VALIDACAO] " << e.what() << std::endl;
                 }
                 break;
             }

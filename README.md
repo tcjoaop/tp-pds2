@@ -135,11 +135,11 @@ Pós-condição     |   Pedido FINALIZADO e pagamento registrado.
 ### 5.2. Programação Defensiva e Tratamento de Exceções
 
 Sempre que um dado inválido é inserido, lançamos a exceção std::invalid_argument. Essa exceção nos permite proporcionar uma melhor experiência para o usuário ao continuar rodando o código mesmo após uma entrada inválida (que pode ser um erro de digitação ou confusão). Alguns casos que utilizam isso são:
-- Em Produto: IDs 0, nomes vazios, preços negativos ou tempos de preparo negativos.
+- Em Produto: IDs negativos, nomes vazios, preços negativos ou tempos de preparo negativos.
 - Em Mesa: capacidade 0 ou número de mesa negativo.
 - Em ItemPedido: quantidade 0 ou preços unitários negativos.
 - Em Pedido: taxas de serviço ou descontos com valores negativos.
-- Em Cliente: nomes vazios e IDs negativos.
+- Em Usuario: nomes vazios e IDs negativos.
 
 No sistema do restaurante, utilizamos as funções imparBufferEntrada(), lerInteiroSanitizado(), lerDoubleSanitizado(), lerTextoSanitizado(), lerLinhaSanitizada() e lerCaractereSanitizado() para limpar potenciais entradas indesejadas.
 

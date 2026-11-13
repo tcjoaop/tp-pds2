@@ -1,7 +1,18 @@
 #include "../documentation/usuario.hpp"
+#include <stdexcept>
 
 Usuario::Usuario(const int id, const std::string& nome, const std::string& login, const std::string& senha, PerfilAcesso perfil)
-    : id(id), nome(nome), login(login), senha(senha), perfil(perfil) {}
+    : id(id), nome(nome), login(login), senha(senha), perfil(perfil) {
+    if (id <= 0) {
+        throw std::invalid_argument("ID do usuario deve ser positivo.");
+    }
+    if (nome.empty()) {
+        throw std::invalid_argument("Nome do usuario nao pode ser vazio.");
+    }
+    if (login.empty()) {
+        throw std::invalid_argument("Login do usuario nao pode ser vazio.");
+    }
+}
 
 int Usuario::getId() const {
     return id;
@@ -24,10 +35,16 @@ PerfilAcesso Usuario::getPerfil() const {
 }
 
 void Usuario::setNome(const std::string& nome) {
+    if (nome.empty()) {
+        throw std::invalid_argument("Nome do usuario nao pode ser vazio.");
+    }
     this->nome = nome;
 }
 
 void Usuario::setLogin(const std::string& login) {
+    if (login.empty()) {
+        throw std::invalid_argument("Login do usuario nao pode ser vazio.");
+    }
     this->login = login;
 }
 

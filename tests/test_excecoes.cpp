@@ -5,7 +5,11 @@
 #include "../documentation/item_pedido.hpp"
 #include "../documentation/pedido.hpp"
 #include "../documentation/pagamento.hpp"
+#include "../documentation/usuario.hpp"
+#include "../documentation/categoria.hpp"
+#include "../documentation/perfil.hpp"
 #include <stdexcept>
+#include <vector>
 
 TEST_CASE("Excecoes - Mesa com parametros invalidos") {
     // ID negativo
@@ -76,4 +80,43 @@ TEST_CASE("Excecoes - Pedido com taxas ou descontos invalidos") {
 
     CHECK_THROWS_AS(ped.setTaxaServicoPercentual(-5.0), std::invalid_argument);
     CHECK_THROWS_AS(ped.setDesconto(-10.0), std::invalid_argument);
+}
+
+TEST_CASE("Excecoes - Usuario e Subclasses com parametros invalidos") {
+    // ID <= 0
+    CHECK_THROWS_AS(Usuario(-1, "Carlos", "carlos1", "senha123", PerfilAcesso::GARCOM), std::invalid_argument);
+    CHECK_THROWS_AS(Usuario(0, "Carlos", "carlos1", "senha123", PerfilAcesso::GARCOM), std::invalid_argument);
+
+    // Nome vazio
+    CHECK_THROWS_AS(Usuario(1, "", "carlos1", "senha123", PerfilAcesso::GARCOM), std::invalid_argument);
+
+    // Login vazio
+    CHECK_THROWS_AS(Usuario(1, "Carlos", "", "senha123", PerfilAcesso::GARCOM), std::invalid_argument);
+
+    // Subclasses polimorficas
+    CHECK_THROWS_AS(Administrador(-5, "Admin", "admin_log", "123"), std::invalid_argument);
+    CHECK_THROWS_AS(Garcom(2, "", "garcom_log", "123"), std::invalid_argument);
+    CHECK_THROWS_AS(Cozinheiro(3, "Chef", "", "123"), std::invalid_argument);
+    CHECK_THROWS_AS(Caixa(-2, "Caixa", "caixa_log", "123"), std::invalid_argument);
+
+    // Setters
+    Usuario u(10, "Valido", "valido", "123", PerfilAcesso::GARCOM);
+    CHECK_THROWS_AS(u.setNome(""), std::invalid_argument);
+    CHECK_THROWS_AS(u.setLogin(""), std::invalid_argument);
+}
+
+TEST_CASE("Excecoes - Categoria e Perfil com parametros invalidos") {
+    // Categoria
+    CHECK_THROWS_AS(Categoria(-1, "Bebidas", "Sucos"), std::invalid_argument);
+    CHECK_THROWS_AS(Categoria(1, "", "Sucos"), std::invalid_argument);
+    Categoria cat(1, "Sobremesas", "Doces");
+    CHECK_THROWS_AS(cat.setId(-3), std::invalid_argument);
+    CHECK_THROWS_AS(cat.setNome(""), std::invalid_argument);
+
+    // Perfil
+    std::vector<std::string> permsVazias;
+    CHECK_THROWS_AS(Perfil(-1, "Admin", permsVazias), std::invalid_argument);
+    CHECK_THROWS_AS(Perfil(1, "", permsVazias), std::invalid_argument);
+    Perfil perf(1, "Gerente", permsVazias);
+    CHECK_THROWS_AS(perf.adicionarPermissao(""), std::invalid_argument);
 }
